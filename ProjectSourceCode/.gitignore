@@ -1,0 +1,16 @@
+# OS files
+.DS_Store
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Environment files
+.env
+.env.*
