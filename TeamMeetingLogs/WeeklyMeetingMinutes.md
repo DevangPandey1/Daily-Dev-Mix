@@ -16,7 +16,7 @@ Use this file to append weekly TA meeting notes.
 
 - Date: 04/02/26
 - Attendees: Everyone
-- Decisions made: 
+- Decisions made: Using react cade as a template. Need to make relase notes. Got most of front end woking, and woking on redoing code.
 - Alternatives discussed:
 - Follow-up items:
 - Roles and responsibilities:
