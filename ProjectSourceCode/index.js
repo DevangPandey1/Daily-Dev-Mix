@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 // Import Dependencies -->
 const express = require('express'); // To build an application server or API
 const app = express();
@@ -65,6 +67,14 @@ app.get('/welcome', (req, res) => {
 app.get('/playlists', auth, (req, res) => {
   res.render('pages/playlists');
 })
+
+app.get('/history', auth, (req, res) => {
+  res.render('pages/history');
+});
+
+app.get('/active-session', auth, (req, res) => {
+  res.render('pages/active-session');
+});
 
 // starting the server and keeping the connection open to listen for more requests
 module.exports = app.listen(3000);
