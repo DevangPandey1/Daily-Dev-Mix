@@ -114,7 +114,9 @@ const auth = (req, res, next) => {
   }
   next();
 };
-
+app.get('/home', auth (req, res) => {
+    res.render('pages/home');
+});
 // starting the server and keeping the connection open to listen for more requests
 app.listen(3000);
 console.log('Server is listening on port 3000');
