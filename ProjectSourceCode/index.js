@@ -114,9 +114,27 @@ const auth = (req, res, next) => {
   }
   next();
 };
-app.get('/home', auth (req, res) => {
+app.get('/home', auth, (req, res) => {
     res.render('pages/home');
 });
+//Welcome route for lab 10
+app.get('/welcome', (req, res) => {
+  res.json({status: 'success', message: 'Welcome!'});
+});
+app.get('/playlists', auth, (req, res) => {
+  res.render('pages/playlists');
+})
+
+app.get('/history', auth, (req, res) => {
+  res.render('pages/history');
+});
+
+app.get('/active-session', auth, (req, res) => {
+  res.render('pages/active-session');
+});
+
 // starting the server and keeping the connection open to listen for more requests
-app.listen(3000);
-console.log('Server is listening on port 3000');
+const server = app.listen(3000, () => {
+  console.log('Server is listening on port 3000');
+});
+module.exports = app; 
