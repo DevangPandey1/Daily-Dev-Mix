@@ -1,6 +1,6 @@
 # Daily Dev Mix
 
-Personalized Spotify playlists for your daily flow, powered by Gemini AI.
+Personalized Spotify playlists for your daily flow, powered by Spotify and Gemini.
 
 ## Local Setup
 
@@ -25,49 +25,46 @@ Create a `.env` file in the root directory and fill in the following values:
 
 ```env
 # Spotify API Credentials
-# Get these from https://developer.spotify.com/dashboard
-# Create an app and add http://localhost:3000/auth/callback to Redirect URIs
+# Register every callback URI you plan to use in the Spotify dashboard.
 SPOTIFY_CLIENT_ID=your_spotify_client_id
 SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
 
 # Gemini API Key
-# Get this from https://aistudio.google.com/app/apikey
 GEMINI_API_KEY=your_gemini_api_key
 
-# App URL (used for Spotify redirect)
-APP_URL=http://localhost:3000
+# Optional: force one exact redirect URI instead of auto-detecting from the request origin
+SPOTIFY_REDIRECT_URI=
+
+# Required: every redirect URI that Spotify should accept for this app
+# Local loopback requests are normalized to http://127.0.0.1:3000/auth/callback
+SPOTIFY_ALLOWED_REDIRECT_URIS=https://ais-dev-2phkeougjzy46tmi7u2dnl-600786790133.us-east1.run.app/auth/callback,https://ais-pre-2phkeougjzy46tmi7u2dnl-600786790133.us-east1.run.app/auth/callback,http://127.0.0.1:3000/auth/callback
+
+# Optional Gemini model override
+GEMINI_MODEL=gemini-3-flash-preview
 
 # Node Environment
 NODE_ENV=development
+
+# Local port
+PORT=3000
 ```
 
 ### 4. Run the Application
 
-#### Development Mode (with hot reloading)
 ```bash
 npm run dev
 ```
 
-#### Production Mode
-```bash
-# Build the frontend
-npm run build
-
-# Start the server
-NODE_ENV=production npm start
-```
-
 ## Features
 
-- **Spotify Integration**: Connect your account to track what you're listening to.
-- **Session Tracking**: Categorize your listening by activity (Study, Work, Gym, etc.).
-- **AI-Powered Recommendations**: Gemini analyzes your session's vibe and suggests a personalized mix.
-- **Playlist Creation**: Save the AI's suggestions directly to your Spotify account.
-- **Session History**: View past sessions and the tracks you listened to.
+- **Spotify OAuth with safe redirect validation**: The server only uses exact, allowed callback URLs.
+- **Static frontend**: The UI is served as plain HTML, CSS, and JavaScript with no React or Vite build step.
+- **Session tracking**: Capture live listening activity by session type.
+- **AI suggestions**: Gemini runs on the server so the API key stays out of the browser.
+- **Playlist creation**: Save a generated mix directly to Spotify.
 
 ## Tech Stack
 
-- **Frontend**: React, Tailwind CSS, Motion (framer-motion), Lucide Icons
+- **Frontend**: HTML, CSS, JavaScript
 - **Backend**: Node.js, Express, Spotify Web API Node
-- **AI**: Google Gemini Pro (via @google/genai)
-- **Build Tool**: Vite
+- **AI**: Google Gemini (via `@google/genai`)
