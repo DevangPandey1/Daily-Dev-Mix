@@ -38,6 +38,9 @@ app.use(
   })
 );
 
+//helper for handlebars to see if strings or vars are equal
+Handlebars.registerHelper('eq', (a, b) => a === b);
+
 //START OF API ROUTES
 app.get('/', (req, res) => {
   res.redirect('/login');
@@ -105,7 +108,6 @@ const auth = (req, res, next) => {
   }
   next();
 };
-
 app.get('/home', auth, (req, res) => {
   res.render('pages/home', { activePage: 'home' });
 });
