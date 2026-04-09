@@ -9,6 +9,13 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
+const PORT = Number(process.env.PORT || 3000);
+const HOST = process.env.HOST || '0.0.0.0';
+const SESSION_SECRET = process.env.SESSION_SECRET || 'local-dev-session-secret';
+
+if (!process.env.SESSION_SECRET) {
+  console.warn('SESSION_SECRET is not set. Using a local development fallback secret.');
+}
 
 //Connect to DB -->
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
@@ -27,7 +34,7 @@ app.use(bodyParser.json()); // specify the usage of JSON for parsing request bod
 // initialize session variables
 app.use(
   session({
-    secret: process.env.SESSION_SECRET,
+    secret: SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
   })
@@ -132,6 +139,6 @@ app.get('/active-session', auth, (req, res) => {
 
 
 // starting the server and keeping the connection open to listen for more requests
-module.exports = app.listen(3000, '0.0.0.0', () => {
-  console.log('Server is listening on port 3000');
+module.exports = app.listen(PORT, HOST, () => {
+  console.log(`Server is listening on http://${HOST}:${PORT}`);
 });

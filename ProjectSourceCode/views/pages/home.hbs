@@ -166,47 +166,6 @@
     color: #B3B3B3;
   }
 
-  /* ── Info / how it works box ── */
-  .info-box {
-    padding: 32px;
-    border-radius: 10px;
-    background: linear-gradient(to right, rgba(29,185,84,0.1), rgba(29,185,84,0.05));
-    border: 1px solid rgba(29,185,84,0.2);
-  }
-  .info-box-title {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color: #fff;
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .info-box-title svg { color: #1DB954; width: 24px; height: 24px; flex-shrink: 0; }
-
-  .steps-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  @media(min-width:640px){ .steps-grid { grid-template-columns: repeat(2,1fr); } }
-
-  .step-col { display: flex; flex-direction: column; gap: 16px; }
-
-  .step-row { display: flex; gap: 14px; }
-  .step-num {
-    width: 32px; height: 32px;
-    border-radius: 50%;
-    background: #1DB954;
-    color: #000;
-    font-weight: 700;
-    font-size: 0.9rem;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0;
-  }
-  .step-title { font-size: 0.95rem; font-weight: 600; color: #fff; margin-bottom: 3px; }
-  .step-desc  { font-size: 0.875rem; color: #B3B3B3; line-height: 1.55; }
-
   /* ── Spacing helpers ── */
   .mb-12 { margin-bottom: 48px; }
   .mb-16 { margin-bottom: 64px; }
@@ -287,50 +246,6 @@
         </a>
       </div>
     </div>
-
-    <!-- How it works box -->
-    <div class="info-box mt-16 fu d4">
-      <h3 class="info-box-title">
-        <!-- Sparkles icon -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-        How it works
-      </h3>
-      <div class="steps-grid">
-        <div class="step-col">
-          <div class="step-row">
-            <div class="step-num">1</div>
-            <div>
-              <p class="step-title">Choose Activity</p>
-              <p class="step-desc">Select what you're doing — studying, working out, or chilling</p>
-            </div>
-          </div>
-          <div class="step-row">
-            <div class="step-num">2</div>
-            <div>
-              <p class="step-title">Track Metadata</p>
-              <p class="step-desc">We analyze audio features and listening patterns</p>
-            </div>
-          </div>
-        </div>
-        <div class="step-col">
-          <div class="step-row">
-            <div class="step-num">3</div>
-            <div>
-              <p class="step-title">Generate Playlists</p>
-              <p class="step-desc">We build personalized mixes based on your taste</p>
-            </div>
-          </div>
-          <div class="step-row">
-            <div class="step-num">4</div>
-            <div>
-              <p class="step-title">Enjoy Your Mix</p>
-              <p class="step-desc">Music that truly matches your vibe and activity</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 
