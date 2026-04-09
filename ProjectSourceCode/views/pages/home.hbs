@@ -161,6 +161,15 @@
     color: #fff;
     margin-bottom: 4px;
   }
+  .random-phrase {
+  margin-top: 12px;
+  font-size: 1.1rem;
+  color: #1DB954;
+  font-weight: 600;
+  opacity: 0;
+  animation: fadeUp 0.6s ease forwards;
+  } 
+
   .quick-sub {
     font-size: 0.875rem;
     color: #B3B3B3;
@@ -222,6 +231,8 @@
   .d2 { animation-delay: 0.16s; }
   .d3 { animation-delay: 0.24s; }
   .d4 { animation-delay: 0.32s; }
+
+  
 </style>
 
 <!-- Beginning of Page Layout -->
@@ -230,12 +241,12 @@
   <div class="home-inner">
 
     <!-- Header -->
-    <div class="mb-12 fu">
-      <h1 class="home-title">Daily Dev Mix</h1>
-      <p class="home-subtitle">
-        Track your listening sessions and get truly personalized playlists based on your actual music preferences
-      </p>
-    </div>
+   <div class="mb-12 fu">
+  <h1 class="home-title" id="randomHeader"></h1>
+  <p class="home-subtitle">
+    Track your listening sessions and get truly personalized playlists based on your actual music preferences
+  </p>
+</div>
 
     <!-- Vibe selector -->
     <div class="mb-12 fu d1">
@@ -357,5 +368,26 @@
       window.location.href = '/active-session';
     }
   }
+  const phrases = [
+  "Welcome back",
+  "Holy playlist aura",
+  "Your vibe is unmatched today",
+  "Music that understands you",
+  "Another day, another soundtrack",
+  "Press play on your mood",
+  "This session is about to hit different",
+  "Today's vibe: curated perfection"
+];
+
+function updateHeader() {
+    const header = document.getElementById("randomHeader");
+    if (!header) return;
+    const random = phrases[Math.floor(Math.random() * phrases.length)];
+    header.textContent = random;
+  }
+
+  // Initialize on load
+
+  window.onload = updateHeader;
 </script>
 
