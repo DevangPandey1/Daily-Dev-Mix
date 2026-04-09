@@ -107,7 +107,7 @@ const auth = (req, res, next) => {
 };
 
 app.get('/home', auth, (req, res) => {
-  res.render('pages/home');
+  res.render('pages/home', { activePage: 'home' });
 });
 
 //Welcome route for lab 10
@@ -116,11 +116,11 @@ app.get('/welcome', (req, res) => {
 });
 
 app.get('/playlists', auth, (req, res) => {
-  res.render('pages/playlists');
+  res.render('pages/playlists', { activePage: 'playlists' });
 })
 
 app.get('/history', auth, (req, res) => {
-  res.render('pages/history');
+  res.render("pages/history", { activePage: 'history' });
 });
 
 app.get('/active-session', auth, (req, res) => {
