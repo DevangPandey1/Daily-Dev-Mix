@@ -84,6 +84,131 @@
     color: #000;
   }
 
+  .create-topic-btn {
+    background: #1E1E1E;
+    border-color: #5C5C5C;
+  }
+  .create-topic-btn:hover {
+    background: #2A2A2A;
+  }
+
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    z-index: 1000;
+  }
+  .modal-backdrop.open {
+    display: flex;
+  }
+  .modal-card {
+    width: min(520px, 100%);
+    background: #0f0f0f;
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 24px 48px rgba(0,0,0,0.35);
+  }
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+  .modal-header h3 {
+    font-size: 1.4rem;
+    margin: 0;
+  }
+  .modal-close {
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 1.2rem;
+    cursor: pointer;
+  }
+  .modal-description {
+    color: #B3B3B3;
+    margin-bottom: 20px;
+    line-height: 1.5;
+  }
+  .modal-label {
+    display: block;
+    color: #fff;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .modal-input {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: #111;
+    border: 1px solid #2B2B2B;
+    color: #fff;
+    margin-bottom: 8px;
+    font-size: 1rem;
+  }
+  .modal-hint {
+    color: #6B6B6B;
+    margin-bottom: 18px;
+    font-size: 0.92rem;
+  }
+  .emoji-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .emoji-option {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid #2B2B2B;
+    background: #111;
+    color: #fff;
+    font-size: 1.3rem;
+    cursor: pointer;
+  }
+  .emoji-option.selected {
+    border-color: #1DB954;
+    box-shadow: 0 0 0 3px rgba(29,185,84,0.15);
+  }
+  .modal-error {
+    color: #ff6b6b;
+    min-height: 20px;
+    margin-bottom: 12px;
+    font-size: 0.95rem;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .modal-button {
+    border: none;
+    border-radius: 999px;
+    padding: 14px 24px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  .modal-button.primary {
+    background: #1DB954;
+    color: #000;
+  }
+  .modal-button.cancel {
+    background: #202020;
+    color: #fff;
+  }
+
   /* ── Start button ── */
   .start-btn {
     display: inline-flex;
@@ -240,13 +365,48 @@
     <!-- Vibe selector -->
     <div class="mb-12 fu d1">
       <h2 class="section-heading">Choose your vibe</h2>
-      <div class="vibe-grid">
-        <button class="vibe-btn" data-label="Studying"   data-emoji="📚" onclick="selectVibe(this)"><span class="vibe-emoji">📚</span><span class="vibe-label">Studying</span></button>
-        <button class="vibe-btn" data-label="Workout"    data-emoji="💪" onclick="selectVibe(this)"><span class="vibe-emoji">💪</span><span class="vibe-label">Workout</span></button>
-        <button class="vibe-btn" data-label="Road Trip"  data-emoji="🚗" onclick="selectVibe(this)"><span class="vibe-emoji">🚗</span><span class="vibe-label">Road Trip</span></button>
-        <button class="vibe-btn" data-label="Relaxing"   data-emoji="🧘" onclick="selectVibe(this)"><span class="vibe-emoji">🧘</span><span class="vibe-label">Relaxing</span></button>
-        <button class="vibe-btn" data-label="Party"      data-emoji="🎉" onclick="selectVibe(this)"><span class="vibe-emoji">🎉</span><span class="vibe-label">Party</span></button>
-        <button class="vibe-btn" data-label="Deep Focus" data-emoji="🎯" onclick="selectVibe(this)"><span class="vibe-emoji">🎯</span><span class="vibe-label">Deep Focus</span></button>
+      <div class="vibe-grid" id="vibeGrid">
+        <button class="vibe-btn" data-label="Studying" data-emoji="📚" onclick="selectVibe(this)"><span class="vibe-emoji">📚</span><span class="vibe-label">Studying</span></button>
+        <button class="vibe-btn" data-label="Workout" data-emoji="💪" onclick="selectVibe(this)"><span class="vibe-emoji">💪</span><span class="vibe-label">Workout</span></button>
+        <button class="vibe-btn" data-label="Road Trip" data-emoji="🚗" onclick="selectVibe(this)"><span class="vibe-emoji">🚗</span><span class="vibe-label">Road Trip</span></button>
+        <button class="vibe-btn" data-label="Relaxing" data-emoji="🧘" onclick="selectVibe(this)"><span class="vibe-emoji">🧘</span><span class="vibe-label">Relaxing</span></button>
+        <button class="vibe-btn" data-label="Party" data-emoji="🎉" onclick="selectVibe(this)"><span class="vibe-emoji">🎉</span><span class="vibe-label">Party</span></button>
+        <button class="vibe-btn create-topic-btn" onclick="openTopicModal()"><span class="vibe-emoji">➕</span><span class="vibe-label">Create Topic</span></button>
+      </div>
+    </div>
+
+    <div id="topicModal" class="modal-backdrop" onclick="closeTopicModal(event)">
+      <div class="modal-card" onclick="event.stopPropagation()">
+        <div class="modal-header">
+          <h3>Create New Topic</h3>
+          <button class="modal-close" onclick="closeTopicModal(event)">✕</button>
+        </div>
+        <p class="modal-description">Add a custom listening topic and choose an emoji to represent it.</p>
+        <form id="topicForm" onsubmit="handleTopicSubmit(event)">
+          <label class="modal-label" for="topicName">Topic name</label>
+          <input id="topicName" class="modal-input" type="text" maxlength="30" placeholder="e.g. Focus Study" autocomplete="off" />
+          <p class="modal-hint">Max 30 characters</p>
+
+          <label class="modal-label">Emoji</label>
+          <div class="emoji-grid" id="emojiPicker">
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">🎵</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">🎧</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">🎸</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">🎤</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">🎯</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">💬</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">😌</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">🚀</button>
+            <button type="button" class="emoji-option" onclick="selectTopicEmoji(this)">📚</button>
+          </div>
+          <input id="topicEmoji" type="hidden" />
+          <p id="topicError" class="modal-error"></p>
+
+          <div class="modal-actions">
+            <button type="button" class="modal-button cancel" onclick="closeTopicModal(event)">Cancel</button>
+            <button type="submit" class="modal-button primary">Save Topic</button>
+          </div>
+        </form>
       </div>
     </div>
 
@@ -336,26 +496,127 @@
 <!-- Beginning of Script Code and Functions -->
 
 <script>
-  let selectedVibe = null;
+  const storageKey = 'customListeningTopics';
+  const vibeGrid = document.getElementById('vibeGrid');
+  const topicModal = document.getElementById('topicModal');
+  const topicName = document.getElementById('topicName');
+  const topicEmoji = document.getElementById('topicEmoji');
+  const topicError = document.getElementById('topicError');
+  const startBtn = document.getElementById('startBtn');
 
-  function selectVibe(btn) {
-    document.querySelectorAll('.vibe-btn').forEach(b => b.classList.remove('selected'));
+  const getCustomTopics = () => {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey) || '[]');
+    } catch {
+      return [];
+    }
+  };
+
+  const saveCustomTopics = (topics) => {
+    localStorage.setItem(storageKey, JSON.stringify(topics));
+  };
+
+  const activateStartButton = () => {
+    startBtn.classList.replace('inactive', 'active');
+  };
+
+  const selectVibe = (btn) => {
+    document.querySelectorAll('.vibe-btn').forEach((item) => item.classList.remove('selected'));
     btn.classList.add('selected');
-    selectedVibe = btn.dataset.label;
 
-    // Save for other pages
     sessionStorage.setItem('selectedLabel', btn.dataset.label);
     sessionStorage.setItem('selectedEmoji', btn.dataset.emoji);
+    activateStartButton();
+  };
 
-    // Activate start button
-    const startBtn = document.getElementById('startBtn');
-    startBtn.classList.replace('inactive', 'active');
-  }
-
-  function handleStart() {
-    if (selectedVibe) {
+  const handleStart = () => {
+    if (sessionStorage.getItem('selectedLabel')) {
       window.location.href = '/active-session';
     }
-  }
+  };
+
+  const renderCustomTopics = () => {
+    vibeGrid.querySelectorAll('.vibe-btn.custom-topic').forEach((node) => node.remove());
+    const anchor = vibeGrid.querySelector('.create-topic-btn');
+    getCustomTopics().forEach(({ label, emoji }) => {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'vibe-btn custom-topic';
+      btn.dataset.label = label;
+      btn.dataset.emoji = emoji;
+      btn.onclick = () => selectVibe(btn);
+      btn.innerHTML = `<span class="vibe-emoji">${emoji}</span><span class="vibe-label">${label}</span>`;
+      vibeGrid.insertBefore(btn, anchor);
+    });
+  };
+
+  const resetModal = () => {
+    topicName.value = '';
+    topicEmoji.value = '';
+    topicError.textContent = '';
+    document.querySelectorAll('.emoji-option').forEach((el) => el.classList.remove('selected'));
+  };
+
+  const openTopicModal = () => {
+    resetModal();
+    topicModal.classList.add('open');
+  };
+
+  const closeTopicModal = (event) => {
+    event?.preventDefault();
+    topicModal.classList.remove('open');
+  };
+
+  const selectTopicEmoji = (btn) => {
+    document.querySelectorAll('.emoji-option').forEach((el) => el.classList.remove('selected'));
+    btn.classList.add('selected');
+    topicEmoji.value = btn.textContent.trim();
+  };
+
+  const handleTopicSubmit = (event) => {
+    event.preventDefault();
+    const name = topicName.value.trim();
+    const emoji = topicEmoji.value.trim();
+
+    if (!name) {
+      topicError.textContent = 'Please enter a topic name.';
+      return;
+    }
+    if (name.length > 30) {
+      topicError.textContent = 'Topic name must be 30 characters or fewer.';
+      return;
+    }
+    if (!emoji) {
+      topicError.textContent = 'Please choose an emoji for the topic.';
+      return;
+    }
+
+    const topics = getCustomTopics();
+    topics.push({ label: name, emoji });
+    saveCustomTopics(topics);
+    renderCustomTopics();
+    closeTopicModal();
+
+    const newBtn = Array.from(vibeGrid.querySelectorAll('.vibe-btn.custom-topic')).find(
+      (btn) => btn.dataset.label === name && btn.dataset.emoji === emoji
+    );
+    if (newBtn) selectVibe(newBtn);
+  };
+
+  window.addEventListener('DOMContentLoaded', () => {
+    renderCustomTopics();
+    const storedLabel = sessionStorage.getItem('selectedLabel');
+    const storedEmoji = sessionStorage.getItem('selectedEmoji');
+
+    if (storedLabel && storedEmoji) {
+      const match = Array.from(document.querySelectorAll('.vibe-btn')).find(
+        (btn) => btn.dataset.label === storedLabel && btn.dataset.emoji === storedEmoji
+      );
+      if (match) {
+        match.classList.add('selected');
+        activateStartButton();
+      }
+    }
+  });
 </script>
 
