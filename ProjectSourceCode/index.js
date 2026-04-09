@@ -40,13 +40,15 @@ app.use(
 
 //START OF API ROUTES
 app.get('/', (req, res) => {
-  res.redirect('/login');
+  if (req.session.user) {
+    return res.redirect('/home');
+  }
+  res.render('pages/landing-page');
 });
 
 app.get('/login', (req, res) => {
-    res.render('pages/login');
+  res.render('pages/login');
 });
-
 //Send Spotify data
 
 app.get('/auth/spotify', (req, res) => {
