@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log('REDIRECT URI:', process.env.SPOTIFY_REDIRECT_URI);
 
 // Import Dependencies -->
 const express = require('express'); // To build an application server or API
