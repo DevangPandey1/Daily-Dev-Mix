@@ -29,6 +29,33 @@ const SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const PLAYLIST_MARKER = 'Created by Daily Dev Mix.';
 const MAX_RECENT_PLAY_PAGES = 5;
+const SPOTIFY_PERMISSION_GROUPS = [
+  {
+    title: 'Read basic Spotify account details',
+    description: 'Show your Spotify name, plan, and region inside Daily Dev Mix.',
+    scopes: ['user-read-private'],
+  },
+  {
+    title: 'View your playlists',
+    description: 'See playlists already saved in your Spotify library.',
+    scopes: ['playlist-read-private'],
+  },
+  {
+    title: 'Create and edit playlists',
+    description: 'Generate Daily Dev Mix playlists and rename them later.',
+    scopes: ['playlist-modify-public', 'playlist-modify-private'],
+  },
+  {
+    title: "See what you're currently playing",
+    description: 'Track live playback while a listening session is running.',
+    scopes: ['user-read-currently-playing', 'user-read-playback-state'],
+  },
+  {
+    title: 'Access your listening history',
+    description: 'Backfill recently played songs when a session ends.',
+    scopes: ['user-read-recently-played'],
+  },
+];
 
 if (!process.env.SESSION_SECRET) {
   console.warn('SESSION_SECRET is not set. Using a local development fallback secret.');
@@ -382,6 +409,85 @@ function serializeSpotifyProfile(profile) {
     displayName: profile.display_name || null,
     product: profile.product || null,
     country: profile.country || null,
+  };
+}
+
+function getPermissionGroups(grantedScopes) {
+  return SPOTIFY_PERMISSION_GROUPS.map(group => {
+    const matchedScopeCount = group.scopes.filter(scope => grantedScopes.includes(scope)).length;
+    return {
+      ...group,
+      isGranted: matchedScopeCount === group.scopes.length,
+      matchedScopeCount,
+      requiredScopeCount: group.scopes.length,
+    };
+  });
+}
+
+function buildProfilePageContext(req, overrides = {}) {
+  const profile = overrides.profile ?? req.session.spotifyProfile ?? null;
+  const grantedScopes = overrides.grantedScopes ?? req.session.spotifyGrantedScopes ?? [];
+  const missingScopes = overrides.missingScopes ?? getMissingSpotifyScopes(req);
+  const generatedPlaylistCount =
+    overrides.generatedPlaylistCount ?? (req.session.generatedPlaylists || []).length;
+  const sessionHistoryCount =
+    overrides.sessionHistoryCount ?? (req.session.sessionHistory || []).length;
+  const activeSessionLabel =
+    overrides.activeSessionLabel ?? req.session.activeListeningSession?.label ?? null;
+  const hasActiveSession = Boolean(activeSessionLabel);
+  const permissionGroups = getPermissionGroups(grantedScopes);
+  const spotifyId = profile?.id || 'Not available yet';
+
+  return {
+    activePage: 'profile',
+    message: overrides.message ?? null,
+    error: overrides.error ?? false,
+    profile,
+    profileInitial: (profile?.displayName || profile?.id || 'D').charAt(0).toUpperCase(),
+    profileDisplayName: profile?.displayName || 'Spotify user',
+    connectionStatusLabel: 'Connected to Spotify',
+    connectionHeadline: hasActiveSession
+      ? 'Your Spotify connection is active, and your listening session is already running.'
+      : "Your Spotify connection is active. Here's what Daily Dev Mix can access and how you control it.",
+    connectionSummary: hasActiveSession
+      ? 'Jump back into your live session, keep tracking playback, and turn it into a playlist when you are ready.'
+      : "Connected to Spotify - you're ready to generate playlists from real listening sessions.",
+    spotifyPlanLabel: profile?.product
+      ? profile.product.charAt(0).toUpperCase() + profile.product.slice(1)
+      : 'Unknown',
+    countryLabel: profile?.country || 'Unknown',
+    spotifyId,
+    generatedPlaylistCount,
+    sessionHistoryCount,
+    activeSessionLabel,
+    hasActiveSession,
+    playlistSummaryTitle: generatedPlaylistCount
+      ? `${generatedPlaylistCount} playlist${generatedPlaylistCount === 1 ? '' : 's'} generated`
+      : 'No playlists generated yet',
+    playlistSummaryCopy: generatedPlaylistCount
+      ? 'Your generated mixes are ready to browse in the playlist library.'
+      : 'Generate your first playlist to get started.',
+    historySummaryTitle: sessionHistoryCount
+      ? `${sessionHistoryCount} session${sessionHistoryCount === 1 ? '' : 's'} completed`
+      : 'No listening sessions completed yet',
+    historySummaryCopy: sessionHistoryCount
+      ? 'Completed sessions help Daily Dev Mix learn from what you actually played.'
+      : 'Finish a listening session to start building history.',
+    currentSessionTitle: hasActiveSession ? activeSessionLabel : 'No session running',
+    currentSessionCopy: hasActiveSession
+      ? 'Resume your current session to keep tracking live playback in real time.'
+      : 'Start a listening session to track what you play next.',
+    primaryActionLabel: hasActiveSession ? 'Resume Listening Session' : 'Start Listening Session',
+    primaryActionHref: hasActiveSession ? '/active-session' : '/home',
+    secondaryActionLabel: 'Go to Playlist Library',
+    secondaryActionHref: '/playlists',
+    grantedScopeCount: grantedScopes.length,
+    missingScopeCount: missingScopes.length,
+    requiredScopeCount: REQUIRED_SPOTIFY_SCOPES.length,
+    permissionGroups,
+    grantedScopes,
+    missingScopes,
+    hasTechnicalScopeDetails: Boolean(grantedScopes.length || missingScopes.length),
   };
 }
 
@@ -911,29 +1017,14 @@ app.get('/profile', authPage, async (req, res) => {
     }
   }
 
-  const grantedScopes = req.session.spotifyGrantedScopes || [];
-  const missingScopes = getMissingSpotifyScopes(req);
-
-  res.render('pages/profile', {
-    activePage: 'profile',
-    message: profileMessage,
-    error: profileError,
-    profile,
-    profileInitial: (profile?.displayName || profile?.id || 'D').charAt(0).toUpperCase(),
-    profileDisplayName: profile?.displayName || 'Spotify user',
-    spotifyPlanLabel: profile?.product
-      ? profile.product.charAt(0).toUpperCase() + profile.product.slice(1)
-      : 'Unknown',
-    countryLabel: profile?.country || 'Unknown',
-    activeSessionLabel: req.session.activeListeningSession?.label || null,
-    generatedPlaylistCount: (req.session.generatedPlaylists || []).length,
-    sessionHistoryCount: (req.session.sessionHistory || []).length,
-    grantedScopeCount: grantedScopes.length,
-    missingScopeCount: missingScopes.length,
-    requiredScopeCount: REQUIRED_SPOTIFY_SCOPES.length,
-    grantedScopes,
-    missingScopes,
-  });
+  res.render(
+    'pages/profile',
+    buildProfilePageContext(req, {
+      message: profileMessage,
+      error: profileError,
+      profile,
+    })
+  );
 });
 
 app.post('/logout', authPage, async (req, res) => {
@@ -942,24 +1033,13 @@ app.post('/logout', authPage, async (req, res) => {
     res.redirect('/login?loggedOut=1');
   } catch (logoutError) {
     console.log('Logout error:', logoutError.message);
-    res.status(500).render('pages/profile', {
-      activePage: 'profile',
-      message: 'The app could not sign you out right now. Please try again.',
-      error: true,
-      profile: req.session.spotifyProfile || null,
-      profileInitial: 'D',
-      profileDisplayName: 'Spotify user',
-      spotifyPlanLabel: 'Unknown',
-      countryLabel: 'Unknown',
-      activeSessionLabel: req.session.activeListeningSession?.label || null,
-      generatedPlaylistCount: (req.session.generatedPlaylists || []).length,
-      sessionHistoryCount: (req.session.sessionHistory || []).length,
-      grantedScopeCount: (req.session.spotifyGrantedScopes || []).length,
-      missingScopeCount: getMissingSpotifyScopes(req).length,
-      requiredScopeCount: REQUIRED_SPOTIFY_SCOPES.length,
-      grantedScopes: req.session.spotifyGrantedScopes || [],
-      missingScopes: getMissingSpotifyScopes(req),
-    });
+    res.status(500).render(
+      'pages/profile',
+      buildProfilePageContext(req, {
+        message: 'The app could not sign you out right now. Please try again.',
+        error: true,
+      })
+    );
   }
 });
 
@@ -969,24 +1049,13 @@ app.post('/disconnect', authPage, async (req, res) => {
     res.redirect('/login?disconnected=1');
   } catch (disconnectError) {
     console.log('Disconnect error:', disconnectError.message);
-    res.status(500).render('pages/profile', {
-      activePage: 'profile',
-      message: 'The Spotify connection could not be cleared right now. Please try again.',
-      error: true,
-      profile: req.session.spotifyProfile || null,
-      profileInitial: 'D',
-      profileDisplayName: 'Spotify user',
-      spotifyPlanLabel: 'Unknown',
-      countryLabel: 'Unknown',
-      activeSessionLabel: req.session.activeListeningSession?.label || null,
-      generatedPlaylistCount: (req.session.generatedPlaylists || []).length,
-      sessionHistoryCount: (req.session.sessionHistory || []).length,
-      grantedScopeCount: (req.session.spotifyGrantedScopes || []).length,
-      missingScopeCount: getMissingSpotifyScopes(req).length,
-      requiredScopeCount: REQUIRED_SPOTIFY_SCOPES.length,
-      grantedScopes: req.session.spotifyGrantedScopes || [],
-      missingScopes: getMissingSpotifyScopes(req),
-    });
+    res.status(500).render(
+      'pages/profile',
+      buildProfilePageContext(req, {
+        message: 'The Spotify connection could not be cleared right now. Please try again.',
+        error: true,
+      })
+    );
   }
 });
 
