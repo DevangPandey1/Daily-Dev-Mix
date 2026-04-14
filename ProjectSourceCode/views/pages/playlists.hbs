@@ -213,34 +213,6 @@
   }
   .playlist-meta svg { width: 12px; height: 12px; flex-shrink: 0; }
 
-  /* ── Info box ── */
-  .info-box {
-    margin-top: 64px;
-    padding: 32px;
-    border-radius: 10px;
-    background: linear-gradient(to right, rgba(29,185,84,0.05), transparent);
-    border: 1px solid #282828;
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
-  .info-box-icon {
-    color: #1DB954;
-    flex-shrink: 0;
-    margin-top: 2px;
-    width: 32px; height: 32px;
-  }
-  .info-box-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    margin-bottom: 10px;
-  }
-  .info-box-text {
-    color: #B3B3B3;
-    font-size: 0.9rem;
-    line-height: 1.75;
-  }
-
   /* ── Fade-up animation ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -285,21 +257,6 @@
 
     <!-- Playlist grid (shown when playlists exist) -->
     <div class="playlist-grid fu d1" id="playlistGrid"></div>
-
-    <!-- Info box -->
-    <div class="info-box fu d2" id="infoBox" style="display:none;">
-      <svg class="info-box-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3z"/><path d="M5 3v4"/><path d="M19 17v4"/><path d="M3 5h4"/><path d="M17 19h4"/></svg>
-      <div>
-        <h3 class="info-box-title">AI-Powered Personalization</h3>
-        <p class="info-box-text">
-          Each playlist is generated using advanced audio analysis and machine learning.
-          We analyze energy levels, danceability, mood (valence), tempo, and acoustic features
-          from the tracks you listened to during your session. Our algorithm then finds similar
-          tracks that match your unique taste — creating truly personalized mixes, not just
-          generic activity-based recommendations.
-        </p>
-      </div>
-    </div>
 
   </div>
 </div>
@@ -350,7 +307,6 @@
   function buildGrid() {
     const grid = document.getElementById('playlistGrid');
     const emptyState = document.getElementById('emptyState');
-    const infoBox = document.getElementById('infoBox');
 
     if (playlists.length === 0) {
       // Show empty state, hide grid
@@ -359,8 +315,7 @@
       return;
     }
 
-    // Show grid and info box, hide empty state
-    infoBox.style.display = 'flex';
+    // Show grid, hide empty state
 
     playlists.forEach(function(playlist) {
       // Create the card element
