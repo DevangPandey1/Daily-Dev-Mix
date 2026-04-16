@@ -85,6 +85,81 @@
     color: #B3B3B3;
   }
 
+  .library-message {
+    display: none;
+    margin-bottom: 24px;
+    padding: 16px 18px;
+    border-radius: 12px;
+    border: 1px solid #282828;
+    background: #161616;
+    line-height: 1.55;
+  }
+  .library-message.visible { display: block; }
+  .library-message.success {
+    border-color: rgba(29,185,84,0.35);
+    background: rgba(29,185,84,0.12);
+  }
+  .library-message.error {
+    border-color: rgba(248,113,113,0.35);
+    background: rgba(127,29,29,0.35);
+  }
+  .library-message.info {
+    border-color: rgba(96,165,250,0.35);
+    background: rgba(59,130,246,0.12);
+  }
+
+  .library-controls {
+    display: none;
+    grid-template-columns: minmax(0, 1.4fr) minmax(220px, 0.6fr) auto;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+  @media(max-width:840px) {
+    .library-controls {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .search-shell,
+  .sort-shell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #151515;
+    border: 1px solid #282828;
+  }
+  .search-shell svg,
+  .sort-shell svg {
+    flex-shrink: 0;
+    color: #B3B3B3;
+  }
+  .search-input,
+  .sort-select {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-size: 0.95rem;
+    outline: none;
+  }
+  .sort-select option {
+    background: #111;
+  }
+
+  .results-note {
+    justify-self: end;
+    color: #B3B3B3;
+    font-size: 0.9rem;
+  }
+  @media(max-width:840px) {
+    .results-note {
+      justify-self: start;
+    }
+  }
+
   /* ── Empty state ── */
   .empty-state {
     text-align: center;
@@ -197,6 +272,53 @@
   .playlist-card.new-playlist {
     box-shadow: 0 0 0 1px rgba(29,185,84,0.45), 0 16px 28px rgba(29,185,84,0.12);
   }
+  .playlist-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .playlist-action-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 10px 14px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    transition: transform 0.18s, background 0.18s;
+  }
+  .playlist-action-btn:hover {
+    transform: translateY(-1px);
+  }
+  .playlist-action-btn.open {
+    background: rgba(29,185,84,0.16);
+    color: #86efac;
+  }
+  .playlist-action-btn.share,
+  .playlist-action-btn.rename {
+    background: #222;
+    color: #fff;
+  }
+  .playlist-action-btn.remove {
+    background: rgba(239,68,68,0.15);
+    color: #fca5a5;
+  }
+  .playlist-open-hint {
+    margin-top: 12px;
+    color: #7d7d7d;
+    font-size: 0.78rem;
+  }
+
+  .filter-empty {
+    display: none;
+    padding: 48px 28px;
+    border-radius: 18px;
+    border: 1px dashed rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.02);
+    color: #B3B3B3;
+    line-height: 1.7;
+    text-align: center;
+  }
+  .filter-empty.visible { display: block; }
 
   .playlist-name {
     font-size: 0.95rem;
@@ -255,6 +377,87 @@
     line-height: 1.75;
   }
 
+  .rename-modal-shell {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(0,0,0,0.72);
+    backdrop-filter: blur(12px);
+    z-index: 2000;
+  }
+  .rename-modal-shell.visible { display: flex; }
+
+  .rename-modal {
+    width: min(100%, 460px);
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: linear-gradient(180deg, rgba(20,20,20,0.98), rgba(12,12,12,0.98));
+    padding: 24px;
+    box-shadow: 0 24px 72px rgba(0,0,0,0.45);
+  }
+
+  .rename-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .rename-copy {
+    color: #B3B3B3;
+    line-height: 1.6;
+    margin-bottom: 18px;
+  }
+
+  .rename-label {
+    display: block;
+    font-size: 0.86rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #D1D5DB;
+  }
+
+  .rename-input {
+    width: 100%;
+    border-radius: 14px;
+    border: 1px solid #2f2f2f;
+    background: #101010;
+    color: #fff;
+    padding: 14px 16px;
+    font-size: 0.98rem;
+    outline: none;
+  }
+  .rename-input:focus {
+    border-color: rgba(29,185,84,0.55);
+    box-shadow: 0 0 0 4px rgba(29,185,84,0.12);
+  }
+
+  .rename-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 18px;
+  }
+
+  .modal-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 12px 18px;
+    font-weight: 700;
+    transition: transform 0.18s, background 0.18s;
+  }
+  .modal-btn:hover { transform: translateY(-1px); }
+  .modal-btn.cancel {
+    background: #242424;
+    color: #fff;
+  }
+  .modal-btn.save {
+    background: #1DB954;
+    color: #04110a;
+  }
+
   /* ── Fade-up animation ── */
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -290,6 +493,34 @@
       </div>
     </div>
 
+    <div class="library-message fu d1" id="libraryMessage"></div>
+
+    <div class="library-controls fu d1" id="libraryControls">
+      <label class="search-shell" for="playlistSearch">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+        <input class="search-input" id="playlistSearch" type="search" placeholder="Search playlist names or descriptions">
+      </label>
+
+      <label class="sort-shell" for="playlistSort">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18"></path>
+          <path d="M6 12h12"></path>
+          <path d="M10 18h4"></path>
+        </svg>
+        <select class="sort-select" id="playlistSort">
+          <option value="name-asc">Name A-Z</option>
+          <option value="name-desc">Name Z-A</option>
+          <option value="tracks-desc">Most songs</option>
+          <option value="tracks-asc">Fewest songs</option>
+        </select>
+      </label>
+
+      <div class="results-note" id="resultsNote">0 playlists</div>
+    </div>
+
     <!-- Empty state (shown when no playlists exist) -->
     <div class="empty-state fu d1" id="emptyState">
       <div class="empty-icon">🎵</div>
@@ -300,6 +531,9 @@
 
     <!-- Playlist grid (shown when playlists exist) -->
     <div class="playlist-grid fu d1" id="playlistGrid"></div>
+    <div class="filter-empty fu d1" id="filterEmptyState">
+      No playlists match the current search or sort view. Try a different keyword or clear the filter.
+    </div>
 
     <!-- Info box -->
     <div class="info-box fu d2" id="infoBox" style="display:none;">
@@ -318,9 +552,40 @@
   </div>
 </div>
 
+<div class="rename-modal-shell" id="renameModal">
+  <div class="rename-modal" role="dialog" aria-modal="true" aria-labelledby="renameTitle">
+    <h2 class="rename-title" id="renameTitle">Rename Playlist</h2>
+    <p class="rename-copy">
+      Update the Spotify title for <span id="renameTargetTitle">this playlist</span>. The new name will be used in Daily Dev Mix too.
+    </p>
+    <form id="renameForm">
+      <label class="rename-label" for="renameInput">Playlist name</label>
+      <input class="rename-input" id="renameInput" type="text" maxlength="120" required>
+      <div class="rename-actions">
+        <button class="modal-btn cancel" type="button" id="renameCancelBtn">Cancel</button>
+        <button class="modal-btn save" type="submit" id="renameSubmitBtn">Save Name</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <!-- Beginning of Script Code and Functions -->
 
 <script>
+  let allPlaylists = [];
+  let renameTargetId = null;
+
+  const searchInput = document.getElementById('playlistSearch');
+  const sortSelect = document.getElementById('playlistSort');
+  const resultsNote = document.getElementById('resultsNote');
+  const libraryMessage = document.getElementById('libraryMessage');
+  const renameModal = document.getElementById('renameModal');
+  const renameForm = document.getElementById('renameForm');
+  const renameInput = document.getElementById('renameInput');
+  const renameTargetTitle = document.getElementById('renameTargetTitle');
+  const renameCancelBtn = document.getElementById('renameCancelBtn');
+  const renameSubmitBtn = document.getElementById('renameSubmitBtn');
+
   function openPlaylist(desktopUrl, webUrl) {
     if (!desktopUrl && !webUrl) {
       return;
@@ -381,6 +646,95 @@
     launcherLink.remove();
   }
 
+  function showLibraryMessage(message, type) {
+    if (!message) {
+      libraryMessage.textContent = '';
+      libraryMessage.className = 'library-message';
+      return;
+    }
+
+    libraryMessage.textContent = message;
+    libraryMessage.className = 'library-message visible ' + (type || 'info');
+  }
+
+  function getPlaylistCountLabel(count) {
+    return count === 1 ? '1 playlist' : count + ' playlists';
+  }
+
+  function updateResultsNote(filteredCount, totalCount) {
+    if (!totalCount) {
+      resultsNote.textContent = '0 playlists';
+      return;
+    }
+
+    if (filteredCount === totalCount) {
+      resultsNote.textContent = getPlaylistCountLabel(totalCount);
+      return;
+    }
+
+    resultsNote.textContent = filteredCount + ' of ' + totalCount + ' playlists';
+  }
+
+  function sortPlaylists(playlists) {
+    const nextPlaylists = playlists.slice();
+    const sortValue = sortSelect.value;
+
+    if (sortValue === 'name-desc') {
+      return nextPlaylists.sort(function(a, b) {
+        return b.name.localeCompare(a.name);
+      });
+    }
+
+    if (sortValue === 'tracks-desc') {
+      return nextPlaylists.sort(function(a, b) {
+        return b.trackCount - a.trackCount || a.name.localeCompare(b.name);
+      });
+    }
+
+    if (sortValue === 'tracks-asc') {
+      return nextPlaylists.sort(function(a, b) {
+        return a.trackCount - b.trackCount || a.name.localeCompare(b.name);
+      });
+    }
+
+    return nextPlaylists.sort(function(a, b) {
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  function getVisiblePlaylists() {
+    const searchTerm = searchInput.value.trim().toLowerCase();
+    const filtered = allPlaylists.filter(function(playlist) {
+      if (!searchTerm) {
+        return true;
+      }
+
+      return [playlist.name, playlist.description]
+        .join(' ')
+        .toLowerCase()
+        .includes(searchTerm);
+    });
+
+    return sortPlaylists(filtered);
+  }
+
+  function buildActionButton(label, className, onClick) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'playlist-action-btn ' + className;
+    button.textContent = label;
+    button.addEventListener('click', function(event) {
+      event.stopPropagation();
+      const maybePromise = onClick(event);
+      if (maybePromise && typeof maybePromise.catch === 'function') {
+        maybePromise.catch(function(error) {
+          showLibraryMessage(error.message || 'That playlist action could not be completed.', 'error');
+        });
+      }
+    });
+    return button;
+  }
+
   function createPlaylistCard(playlist, lastCreatedPlaylistId) {
     const card = document.createElement('div');
     card.className = 'playlist-card';
@@ -435,35 +789,169 @@
       <span>${playlist.isPublic ? 'Public' : 'Private'}</span>
     `;
 
+    const actions = document.createElement('div');
+    actions.className = 'playlist-actions';
+    actions.appendChild(buildActionButton('Open', 'open', function() {
+      openPlaylist(playlist.desktopUrl, playlist.externalUrl);
+    }));
+    actions.appendChild(buildActionButton('Share', 'share', function() {
+      sharePlaylist(playlist);
+    }));
+    actions.appendChild(buildActionButton('Rename', 'rename', function() {
+      openRenameModal(playlist);
+    }));
+    actions.appendChild(buildActionButton('Remove', 'remove', function() {
+      removePlaylist(playlist);
+    }));
+
+    const hint = document.createElement('p');
+    hint.className = 'playlist-open-hint';
+    hint.textContent = 'Open the card or use the controls below to manage this mix.';
+
     card.appendChild(artWrap);
     card.appendChild(title);
     card.appendChild(description);
     card.appendChild(meta);
+    card.appendChild(actions);
+    card.appendChild(hint);
     return card;
   }
 
   function renderPlaylists(playlists) {
     const grid = document.getElementById('playlistGrid');
     const emptyState = document.getElementById('emptyState');
+    const filterEmptyState = document.getElementById('filterEmptyState');
+    const controls = document.getElementById('libraryControls');
     const infoBox = document.getElementById('infoBox');
     const lastCreatedPlaylistId = sessionStorage.getItem('lastCreatedPlaylistId');
 
     grid.innerHTML = '';
 
-    if (!playlists.length) {
+    if (!allPlaylists.length) {
       emptyState.classList.add('visible');
+      filterEmptyState.classList.remove('visible');
+      controls.style.display = 'none';
       grid.style.display = 'none';
       infoBox.style.display = 'none';
       return;
     }
 
     emptyState.classList.remove('visible');
+    controls.style.display = 'grid';
+    infoBox.style.display = 'flex';
+
+    if (!playlists.length) {
+      filterEmptyState.classList.add('visible');
+      grid.style.display = 'none';
+      return;
+    }
+
+    filterEmptyState.classList.remove('visible');
     grid.style.display = 'grid';
     infoBox.style.display = 'flex';
 
     playlists.forEach(function(playlist) {
       grid.appendChild(createPlaylistCard(playlist, lastCreatedPlaylistId));
     });
+  }
+
+  function applyFilters() {
+    const visiblePlaylists = getVisiblePlaylists();
+    updateResultsNote(visiblePlaylists.length, allPlaylists.length);
+    renderPlaylists(visiblePlaylists);
+  }
+
+  function openRenameModal(playlist) {
+    renameTargetId = playlist.id;
+    renameTargetTitle.textContent = playlist.name;
+    renameInput.value = playlist.name;
+    renameSubmitBtn.textContent = 'Save Name';
+    renameSubmitBtn.disabled = false;
+    renameModal.classList.add('visible');
+    renameInput.focus();
+    renameInput.select();
+  }
+
+  function closeRenameModal() {
+    renameTargetId = null;
+    renameModal.classList.remove('visible');
+    renameForm.reset();
+  }
+
+  async function sharePlaylist(playlist) {
+    if (!playlist.externalUrl) {
+      showLibraryMessage('This playlist does not have a shareable Spotify link yet.', 'error');
+      return;
+    }
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: playlist.name,
+          text: 'Shared from Daily Dev Mix',
+          url: playlist.externalUrl,
+        });
+        showLibraryMessage('Share sheet opened for ' + playlist.name + '.', 'success');
+        return;
+      } catch (error) {
+        if (error && error.name === 'AbortError') {
+          return;
+        }
+      }
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(playlist.externalUrl);
+        showLibraryMessage('Copied the playlist link for ' + playlist.name + '.', 'success');
+        return;
+      }
+    } catch (error) {
+      // Fall through to the manual copy prompt when clipboard access is blocked.
+    }
+
+    window.prompt('Copy this playlist link', playlist.externalUrl);
+    showLibraryMessage('Use the dialog to copy the playlist link.', 'info');
+  }
+
+  async function removePlaylist(playlist) {
+    const shouldRemove = window.confirm(
+      'Remove "' + playlist.name + '" from your Spotify library?'
+    );
+
+    if (!shouldRemove) {
+      return;
+    }
+
+    try {
+      const response = await fetch('/api/playlists/' + encodeURIComponent(playlist.id), {
+        method: 'DELETE',
+      });
+
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'The playlist could not be removed.');
+      }
+
+      allPlaylists = allPlaylists.filter(function(entry) {
+        return entry.id !== playlist.id;
+      });
+
+      if (sessionStorage.getItem('lastCreatedPlaylistId') === playlist.id) {
+        sessionStorage.removeItem('lastCreatedPlaylistId');
+      }
+
+      applyFilters();
+      showLibraryMessage(payload.message || 'Playlist removed from your library.', 'success');
+    } catch (error) {
+      showLibraryMessage(error.message, 'error');
+    }
   }
 
   function checkForNewPlaylist() {
@@ -494,13 +982,92 @@
       throw new Error(payload.message || 'Spotify playlists could not be loaded.');
     }
 
-    renderPlaylists(payload.playlists || []);
+    allPlaylists = payload.playlists || [];
+    applyFilters();
+
+    if (payload.warning) {
+      showLibraryMessage(payload.warning, 'info');
+    } else {
+      showLibraryMessage('', '');
+    }
   }
+
+  renameForm.addEventListener('submit', async function(event) {
+    event.preventDefault();
+
+    if (!renameTargetId) {
+      return;
+    }
+
+    renameSubmitBtn.disabled = true;
+    renameSubmitBtn.textContent = 'Saving...';
+
+    try {
+      const response = await fetch('/api/playlists/' + encodeURIComponent(renameTargetId), {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: renameInput.value.trim(),
+        }),
+      });
+
+      if (response.status === 401) {
+        window.location.href = '/login';
+        return;
+      }
+
+      const payload = await response.json();
+
+      if (!response.ok) {
+        throw new Error(payload.message || 'The playlist name could not be updated.');
+      }
+
+      allPlaylists = allPlaylists.map(function(playlist) {
+        if (playlist.id !== renameTargetId) {
+          return playlist;
+        }
+
+        return {
+          ...playlist,
+          ...payload.playlist,
+        };
+      });
+
+      closeRenameModal();
+      applyFilters();
+      showLibraryMessage('Renamed playlist to "' + payload.playlist.name + '".', 'success');
+    } catch (error) {
+      renameSubmitBtn.disabled = false;
+      renameSubmitBtn.textContent = 'Save Name';
+      showLibraryMessage(error.message, 'error');
+    }
+  });
+
+  renameCancelBtn.addEventListener('click', closeRenameModal);
+
+  renameModal.addEventListener('click', function(event) {
+    if (event.target === renameModal) {
+      closeRenameModal();
+    }
+  });
+
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape' && renameModal.classList.contains('visible')) {
+      closeRenameModal();
+    }
+  });
+
+  searchInput.addEventListener('input', applyFilters);
+  sortSelect.addEventListener('change', applyFilters);
 
   checkForNewPlaylist();
   loadPlaylists().catch(function(error) {
     document.getElementById('emptyState').classList.add('visible');
     document.getElementById('playlistGrid').style.display = 'none';
+    document.getElementById('libraryControls').style.display = 'none';
+    document.getElementById('filterEmptyState').classList.remove('visible');
     document.getElementById('infoBox').style.display = 'none';
     document.querySelector('.empty-desc').textContent = error.message;
   });

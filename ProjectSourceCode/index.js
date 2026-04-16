@@ -29,6 +29,33 @@ const SPOTIFY_API_BASE_URL = 'https://api.spotify.com/v1';
 const SPOTIFY_TOKEN_URL = 'https://accounts.spotify.com/api/token';
 const PLAYLIST_MARKER = 'Created by Daily Dev Mix.';
 const MAX_RECENT_PLAY_PAGES = 5;
+const SPOTIFY_PERMISSION_GROUPS = [
+  {
+    title: 'Read basic Spotify account details',
+    description: 'Show your Spotify name, plan, and region inside Daily Dev Mix.',
+    scopes: ['user-read-private'],
+  },
+  {
+    title: 'View your playlists',
+    description: 'See playlists already saved in your Spotify library.',
+    scopes: ['playlist-read-private'],
+  },
+  {
+    title: 'Create and edit playlists',
+    description: 'Generate Daily Dev Mix playlists and rename them later.',
+    scopes: ['playlist-modify-public', 'playlist-modify-private'],
+  },
+  {
+    title: "See what you're currently playing",
+    description: 'Track live playback while a listening session is running.',
+    scopes: ['user-read-currently-playing', 'user-read-playback-state'],
+  },
+  {
+    title: 'Access your listening history',
+    description: 'Backfill recently played songs when a session ends.',
+    scopes: ['user-read-recently-played'],
+  },
+];
 
 if (!process.env.SESSION_SECRET) {
   console.warn('SESSION_SECRET is not set. Using a local development fallback secret.');
@@ -385,6 +412,85 @@ function serializeSpotifyProfile(profile) {
   };
 }
 
+function getPermissionGroups(grantedScopes) {
+  return SPOTIFY_PERMISSION_GROUPS.map(group => {
+    const matchedScopeCount = group.scopes.filter(scope => grantedScopes.includes(scope)).length;
+    return {
+      ...group,
+      isGranted: matchedScopeCount === group.scopes.length,
+      matchedScopeCount,
+      requiredScopeCount: group.scopes.length,
+    };
+  });
+}
+
+function buildProfilePageContext(req, overrides = {}) {
+  const profile = overrides.profile ?? req.session.spotifyProfile ?? null;
+  const grantedScopes = overrides.grantedScopes ?? req.session.spotifyGrantedScopes ?? [];
+  const missingScopes = overrides.missingScopes ?? getMissingSpotifyScopes(req);
+  const generatedPlaylistCount =
+    overrides.generatedPlaylistCount ?? (req.session.generatedPlaylists || []).length;
+  const sessionHistoryCount =
+    overrides.sessionHistoryCount ?? (req.session.sessionHistory || []).length;
+  const activeSessionLabel =
+    overrides.activeSessionLabel ?? req.session.activeListeningSession?.label ?? null;
+  const hasActiveSession = Boolean(activeSessionLabel);
+  const permissionGroups = getPermissionGroups(grantedScopes);
+  const spotifyId = profile?.id || 'Not available yet';
+
+  return {
+    activePage: 'profile',
+    message: overrides.message ?? null,
+    error: overrides.error ?? false,
+    profile,
+    profileInitial: (profile?.displayName || profile?.id || 'D').charAt(0).toUpperCase(),
+    profileDisplayName: profile?.displayName || 'Spotify user',
+    connectionStatusLabel: 'Connected to Spotify',
+    connectionHeadline: hasActiveSession
+      ? 'Your Spotify connection is active, and your listening session is already running.'
+      : "Your Spotify connection is active. Here's what Daily Dev Mix can access and how you control it.",
+    connectionSummary: hasActiveSession
+      ? 'Jump back into your live session, keep tracking playback, and turn it into a playlist when you are ready.'
+      : "Connected to Spotify - you're ready to generate playlists from real listening sessions.",
+    spotifyPlanLabel: profile?.product
+      ? profile.product.charAt(0).toUpperCase() + profile.product.slice(1)
+      : 'Unknown',
+    countryLabel: profile?.country || 'Unknown',
+    spotifyId,
+    generatedPlaylistCount,
+    sessionHistoryCount,
+    activeSessionLabel,
+    hasActiveSession,
+    playlistSummaryTitle: generatedPlaylistCount
+      ? `${generatedPlaylistCount} playlist${generatedPlaylistCount === 1 ? '' : 's'} generated`
+      : 'No playlists generated yet',
+    playlistSummaryCopy: generatedPlaylistCount
+      ? 'Your generated mixes are ready to browse in the playlist library.'
+      : 'Generate your first playlist to get started.',
+    historySummaryTitle: sessionHistoryCount
+      ? `${sessionHistoryCount} session${sessionHistoryCount === 1 ? '' : 's'} completed`
+      : 'No listening sessions completed yet',
+    historySummaryCopy: sessionHistoryCount
+      ? 'Completed sessions help Daily Dev Mix learn from what you actually played.'
+      : 'Finish a listening session to start building history.',
+    currentSessionTitle: hasActiveSession ? activeSessionLabel : 'No session running',
+    currentSessionCopy: hasActiveSession
+      ? 'Resume your current session to keep tracking live playback in real time.'
+      : 'Start a listening session to track what you play next.',
+    primaryActionLabel: hasActiveSession ? 'Resume Listening Session' : 'Start Listening Session',
+    primaryActionHref: hasActiveSession ? '/active-session' : '/home',
+    secondaryActionLabel: 'Go to Playlist Library',
+    secondaryActionHref: '/playlists',
+    grantedScopeCount: grantedScopes.length,
+    missingScopeCount: missingScopes.length,
+    requiredScopeCount: REQUIRED_SPOTIFY_SCOPES.length,
+    permissionGroups,
+    grantedScopes,
+    missingScopes,
+    hasTechnicalScopeDetails: Boolean(grantedScopes.length || missingScopes.length),
+  };
+}
+
 function getPlaylistName(sessionData) {
   const dateStamp = new Intl.DateTimeFormat('en-US', {
     month: 'short',
@@ -414,6 +520,24 @@ function createListeningSession(label, emoji) {
 function saveRequestSession(req) {
   return new Promise((resolve, reject) => {
     req.session.save(error => {
+      if (error) {
+        reject(error);
+        return;
+      }
+
+      resolve();
+    });
+  });
+}
+
+function destroyRequestSession(req) {
+  return new Promise((resolve, reject) => {
+    if (!req.session || typeof req.session.destroy !== 'function') {
+      resolve();
+      return;
+    }
+
+    req.session.destroy(error => {
       if (error) {
         reject(error);
         return;
@@ -694,6 +818,66 @@ async function getGeneratedPlaylists(req) {
     });
 }
 
+async function getManagedPlaylistById(req, playlistId) {
+  const cachedPlaylist = (req.session.generatedPlaylists || []).find(
+    playlist => playlist.id === playlistId
+  );
+
+  if (cachedPlaylist) {
+    return serializePlaylist(cachedPlaylist);
+  }
+
+  const playlists = await getGeneratedPlaylists(req);
+  req.session.generatedPlaylists = playlists.map(serializePlaylist);
+  await saveRequestSession(req);
+
+  return playlists.find(playlist => playlist.id === playlistId) || null;
+}
+
+function updateStoredPlaylistDetails(req, playlistId, updates) {
+  req.session.generatedPlaylists = (req.session.generatedPlaylists || []).map(playlist => {
+    if (playlist.id !== playlistId) {
+      return playlist;
+    }
+
+    return serializePlaylist({
+      ...playlist,
+      ...updates,
+    });
+  });
+
+  req.session.sessionHistory = (req.session.sessionHistory || []).map(sessionData => {
+    if (!sessionData.playlist || sessionData.playlist.id !== playlistId) {
+      return sessionData;
+    }
+
+    return {
+      ...sessionData,
+      playlist: serializePlaylist({
+        ...sessionData.playlist,
+        ...updates,
+      }),
+    };
+  });
+}
+
+function removeStoredPlaylist(req, playlistId) {
+  req.session.generatedPlaylists = (req.session.generatedPlaylists || []).filter(
+    playlist => playlist.id !== playlistId
+  );
+
+  req.session.sessionHistory = (req.session.sessionHistory || []).map(sessionData => {
+    if (!sessionData.playlist || sessionData.playlist.id !== playlistId) {
+      return sessionData;
+    }
+
+    return {
+      ...sessionData,
+      playlist: null,
+    };
+  });
+}
+
 // Authentication Middleware: require user to be logged in
 const authPage = (req, res, next) => {
   if (!req.session.user) {
@@ -720,7 +904,18 @@ app.get('/', (req, res) => {
 });
 
 app.get('/login', (req, res) => {
-  res.render('pages/login');
+  let message = null;
+
+  if (req.query.loggedOut === '1') {
+    message = 'You signed out of Daily Dev Mix.';
+  } else if (req.query.disconnected === '1') {
+    message =
+      'Your Spotify connection was removed from this browser session. Sign in again to reconnect.';
+  }
+
+  res.render('pages/login', {
+    message,
+  });
 });
 
 //Send Spotify data
@@ -799,6 +994,70 @@ async function handleSpotifyCallback(req, res) {
 //Recieve returned data from spotify
 app.get('/auth/spotify/callback', handleSpotifyCallback);
 app.get('/auth/callback', handleSpotifyCallback);
+
+app.get('/profile', authPage, async (req, res) => {
+  let profile = req.session.spotifyProfile || null;
+  let profileMessage = null;
+  let profileError = false;
+
+  if (req.session.spotifyToken) {
+    try {
+      const spotifyProfile = await getCurrentSpotifyProfile(req);
+      profile = serializeSpotifyProfile(spotifyProfile);
+      req.session.spotifyProfile = profile;
+      await saveRequestSession(req);
+    } catch (profileLoadError) {
+      console.log('Spotify profile page load error:', formatSpotifyError(profileLoadError));
+      profileMessage = getSpotifyRouteError(
+        req,
+        profileLoadError,
+        'Your Spotify profile could not be refreshed just now.'
+      ).message;
+      profileError = true;
+    }
+  }
+
+  res.render(
+    'pages/profile',
+    buildProfilePageContext(req, {
+      message: profileMessage,
+      error: profileError,
+      profile,
+    })
+  );
+});
+
+app.post('/logout', authPage, async (req, res) => {
+  try {
+    await destroyRequestSession(req);
+    res.redirect('/login?loggedOut=1');
+  } catch (logoutError) {
+    console.log('Logout error:', logoutError.message);
+    res.status(500).render(
+      'pages/profile',
+      buildProfilePageContext(req, {
+        message: 'The app could not sign you out right now. Please try again.',
+        error: true,
+      })
+    );
+  }
+});
+
+app.post('/disconnect', authPage, async (req, res) => {
+  try {
+    await destroyRequestSession(req);
+    res.redirect('/login?disconnected=1');
+  } catch (disconnectError) {
+    console.log('Disconnect error:', disconnectError.message);
+    res.status(500).render(
+      'pages/profile',
+      buildProfilePageContext(req, {
+        message: 'The Spotify connection could not be cleared right now. Please try again.',
+        error: true,
+      })
+    );
+  }
+});
 
 app.get('/home', authPage, (req, res) => {
   res.render('pages/home', { activePage: 'home' });
@@ -1007,6 +1266,103 @@ app.get('/api/playlists', authApi, async (req, res) => {
       status: 'success',
       warning: handledError.message,
       playlists: (req.session.generatedPlaylists || []).map(serializePlaylist),
+    });
+  }
+});
+
+app.patch('/api/playlists/:playlistId', authApi, async (req, res) => {
+  const playlistId = req.params.playlistId;
+  const nextName = String(req.body.name || '').trim();
+
+  if (!nextName) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Enter a playlist name before saving.',
+    });
+  }
+
+  try {
+    const managedPlaylist = await getManagedPlaylistById(req, playlistId);
+
+    if (!managedPlaylist) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'That playlist is not managed by Daily Dev Mix.',
+      });
+    }
+
+    await spotifyApiRequest(req, {
+      method: 'put',
+      url: `/playlists/${playlistId}`,
+      data: {
+        name: nextName,
+      },
+    });
+
+    updateStoredPlaylistDetails(req, playlistId, {
+      name: nextName,
+    });
+    await saveRequestSession(req);
+
+    res.json({
+      status: 'success',
+      playlist: serializePlaylist({
+        ...managedPlaylist,
+        name: nextName,
+      }),
+    });
+  } catch (playlistError) {
+    console.log('Spotify playlist rename error:', formatSpotifyError(playlistError));
+    const handledError = getSpotifyRouteError(
+      req,
+      playlistError,
+      'The playlist name could not be updated right now.'
+    );
+
+    res.status(handledError.status).json({
+      status: 'error',
+      message: handledError.message,
+    });
+  }
+});
+
+app.delete('/api/playlists/:playlistId', authApi, async (req, res) => {
+  const playlistId = req.params.playlistId;
+
+  try {
+    const managedPlaylist = await getManagedPlaylistById(req, playlistId);
+
+    if (!managedPlaylist) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'That playlist is not managed by Daily Dev Mix.',
+      });
+    }
+
+    await spotifyApiRequest(req, {
+      method: 'delete',
+      url: `/playlists/${playlistId}/followers`,
+    });
+
+    removeStoredPlaylist(req, playlistId);
+    await saveRequestSession(req);
+
+    res.json({
+      status: 'success',
+      playlistId,
+      message: 'Playlist removed from your Spotify library.',
+    });
+  } catch (playlistError) {
+    console.log('Spotify playlist delete error:', formatSpotifyError(playlistError));
+    const handledError = getSpotifyRouteError(
+      req,
+      playlistError,
+      'The playlist could not be removed right now.'
+    );
+
+    res.status(handledError.status).json({
+      status: 'error',
+      message: handledError.message,
     });
   }
 });

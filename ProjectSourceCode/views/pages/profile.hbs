@@ -1,0 +1,835 @@
+<style>
+  body {
+    background:
+      radial-gradient(circle at top, rgba(29,185,84,0.18), transparent 26%),
+      #050505;
+    color: #fff;
+    font-family: 'Figtree', sans-serif;
+    min-height: 100vh;
+    margin: 0;
+  }
+
+  .page-wrap {
+    min-height: 100vh;
+    padding: 24px;
+  }
+  @media (min-width: 768px) {
+    .page-wrap { padding: 32px; }
+  }
+
+  .page-inner {
+    max-width: 1160px;
+    margin: 0 auto;
+  }
+
+  .page-message {
+    margin-bottom: 18px;
+  }
+
+  .hero-card {
+    position: relative;
+    overflow: hidden;
+    padding: 30px;
+    border-radius: 28px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background:
+      radial-gradient(circle at right top, rgba(29,185,84,0.24), transparent 34%),
+      linear-gradient(145deg, rgba(255,255,255,0.05), rgba(255,255,255,0.01));
+    box-shadow: 0 28px 70px rgba(0,0,0,0.28);
+    margin-bottom: 22px;
+  }
+
+  .hero-layout {
+    display: grid;
+    gap: 26px;
+    grid-template-columns: 1fr;
+    align-items: center;
+  }
+  @media (min-width: 920px) {
+    .hero-layout {
+      grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.8fr);
+    }
+  }
+
+  .hero-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 999px;
+    background: rgba(29,185,84,0.14);
+    border: 1px solid rgba(29,185,84,0.26);
+    color: #86efac;
+    font-size: 0.86rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    margin-bottom: 18px;
+  }
+
+  .hero-status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: #1ED760;
+    box-shadow: 0 0 0 6px rgba(29,185,84,0.12);
+  }
+
+  .hero-identity {
+    display: flex;
+    gap: 18px;
+    align-items: flex-start;
+  }
+
+  .profile-avatar {
+    width: 78px;
+    height: 78px;
+    border-radius: 24px;
+    background: linear-gradient(135deg, #1DB954, #1ED760);
+    color: #04110a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 900;
+    flex-shrink: 0;
+  }
+
+  .hero-title {
+    font-size: clamp(2.6rem, 7vw, 4.8rem);
+    font-weight: 900;
+    letter-spacing: -0.06em;
+    line-height: 0.92;
+    margin-bottom: 14px;
+  }
+
+  .hero-headline {
+    font-size: 1.08rem;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 10px;
+  }
+
+  .hero-copy {
+    max-width: 760px;
+    color: #B3B3B3;
+    line-height: 1.8;
+    font-size: 1rem;
+  }
+
+  .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+  }
+
+  .hero-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 999px;
+    font-weight: 800;
+    transition: transform 0.18s, background 0.18s, border-color 0.18s;
+  }
+
+  .hero-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .hero-btn.primary {
+    background: #1DB954;
+    color: #04110a;
+  }
+
+  .hero-btn.primary:hover {
+    background: #1ED760;
+  }
+
+  .hero-btn.secondary {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: #fff;
+  }
+
+  .hero-btn.secondary:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .hero-summary-card {
+    padding: 22px;
+    border-radius: 24px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(0,0,0,0.24);
+  }
+
+  .summary-label {
+    color: #B3B3B3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .summary-value {
+    font-size: 1.45rem;
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    margin-bottom: 8px;
+  }
+
+  .summary-copy {
+    color: #B3B3B3;
+    line-height: 1.7;
+    font-size: 0.95rem;
+  }
+
+  .section-shell {
+    padding: 26px;
+    border-radius: 26px;
+    background: rgba(16,16,16,0.95);
+    border: 1px solid rgba(255,255,255,0.07);
+    margin-top: 18px;
+  }
+
+  .section-head {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+    margin-bottom: 22px;
+  }
+
+  .section-icon {
+    width: 46px;
+    height: 46px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 16px;
+    background: rgba(29,185,84,0.14);
+    color: #1ED760;
+    flex-shrink: 0;
+  }
+
+  .section-kicker {
+    color: #86efac;
+    font-size: 0.82rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  .section-title {
+    font-size: 1.55rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    margin-bottom: 8px;
+  }
+
+  .section-copy {
+    color: #B3B3B3;
+    line-height: 1.7;
+    font-size: 0.96rem;
+  }
+
+  .account-grid,
+  .activity-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+  }
+  @media (min-width: 760px) {
+    .account-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .activity-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  .info-card,
+  .activity-card,
+  .privacy-panel,
+  .action-card {
+    border-radius: 22px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: #181818;
+  }
+
+  .info-card {
+    padding: 22px;
+  }
+
+  .info-label {
+    color: #B3B3B3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .info-value {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
+
+  .info-copy {
+    color: #8d8d8d;
+    line-height: 1.6;
+    font-size: 0.92rem;
+  }
+
+  .account-meta {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid rgba(255,255,255,0.07);
+    color: #8c8c8c;
+    font-size: 0.88rem;
+  }
+
+  .account-meta strong {
+    color: #d0d0d0;
+    font-weight: 700;
+  }
+
+  .activity-card {
+    padding: 22px;
+  }
+
+  .activity-card.active {
+    background:
+      radial-gradient(circle at top right, rgba(29,185,84,0.16), transparent 38%),
+      #181818;
+    border-color: rgba(29,185,84,0.18);
+  }
+
+  .activity-label {
+    color: #B3B3B3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+  }
+
+  .activity-title {
+    font-size: 1.45rem;
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    margin-bottom: 10px;
+    line-height: 1.15;
+  }
+
+  .activity-copy {
+    color: #B3B3B3;
+    line-height: 1.7;
+    font-size: 0.94rem;
+  }
+
+  .activity-meta {
+    margin-top: 14px;
+    color: #7f7f7f;
+    font-size: 0.82rem;
+    font-weight: 700;
+  }
+
+  .privacy-grid {
+    display: grid;
+    gap: 16px;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 980px) {
+    .privacy-grid {
+      grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+    }
+  }
+
+  .privacy-panel {
+    padding: 22px;
+  }
+
+  .panel-title {
+    font-size: 1.2rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .panel-copy {
+    color: #B3B3B3;
+    line-height: 1.7;
+    margin-bottom: 18px;
+    font-size: 0.94rem;
+  }
+
+  .permission-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .permission-item {
+    padding: 16px 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.06);
+    background: rgba(255,255,255,0.02);
+  }
+
+  .permission-item.granted {
+    border-color: rgba(29,185,84,0.2);
+    background: rgba(29,185,84,0.08);
+  }
+
+  .permission-item.needs-review {
+    border-color: rgba(250,204,21,0.22);
+    background: rgba(250,204,21,0.08);
+  }
+
+  .permission-top {
+    display: flex;
+    gap: 12px;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+
+  .permission-title {
+    font-size: 1rem;
+    font-weight: 800;
+    margin-bottom: 6px;
+  }
+
+  .permission-copy {
+    color: #C7C7C7;
+    line-height: 1.65;
+    font-size: 0.92rem;
+  }
+
+  .permission-state {
+    flex-shrink: 0;
+    padding: 8px 10px;
+    border-radius: 999px;
+    font-size: 0.76rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .permission-item.granted .permission-state {
+    background: rgba(29,185,84,0.16);
+    color: #86efac;
+  }
+
+  .permission-item.needs-review .permission-state {
+    background: rgba(250,204,21,0.14);
+    color: #fde68a;
+  }
+
+  .technical-details {
+    margin-top: 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.07);
+    background: rgba(255,255,255,0.02);
+    padding: 14px 16px;
+  }
+
+  .technical-details summary {
+    cursor: pointer;
+    font-weight: 800;
+    color: #fff;
+    list-style: none;
+  }
+
+  .technical-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .technical-details summary::after {
+    content: '+';
+    float: right;
+    color: #B3B3B3;
+  }
+
+  .technical-details[open] summary::after {
+    content: '-';
+  }
+
+  .technical-grid {
+    display: grid;
+    gap: 14px;
+    grid-template-columns: 1fr;
+    margin-top: 16px;
+  }
+  @media (min-width: 760px) {
+    .technical-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .technical-heading {
+    color: #B3B3B3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 10px;
+  }
+
+  .scope-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .scope-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .scope-pill.granted {
+    background: rgba(29,185,84,0.1);
+    border-color: rgba(29,185,84,0.22);
+    color: #86efac;
+  }
+
+  .scope-pill.missing {
+    background: rgba(250,204,21,0.1);
+    border-color: rgba(250,204,21,0.22);
+    color: #fde68a;
+  }
+
+  .scope-empty {
+    color: #8d8d8d;
+    line-height: 1.7;
+    font-size: 0.92rem;
+  }
+
+  .action-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .action-card {
+    padding: 18px;
+  }
+
+  .action-card.featured {
+    background:
+      radial-gradient(circle at top right, rgba(29,185,84,0.18), transparent 40%),
+      #181818;
+  }
+
+  .action-card.danger-zone {
+    border-color: rgba(239,68,68,0.18);
+    background: rgba(127,29,29,0.16);
+  }
+
+  .action-label {
+    color: #B3B3B3;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 8px;
+  }
+
+  .action-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+
+  .action-copy {
+    color: #B3B3B3;
+    line-height: 1.7;
+    font-size: 0.93rem;
+    margin-bottom: 16px;
+  }
+
+  .action-btn {
+    width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: 999px;
+    border: none;
+    font-weight: 800;
+    transition: transform 0.18s, background 0.18s, border-color 0.18s;
+  }
+
+  .action-btn:hover {
+    transform: translateY(-1px);
+  }
+
+  .action-btn.primary {
+    background: #1DB954;
+    color: #04110a;
+  }
+
+  .action-btn.primary:hover {
+    background: #1ED760;
+  }
+
+  .action-btn.secondary {
+    background: rgba(255,255,255,0.04);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+
+  .action-btn.secondary:hover {
+    background: rgba(255,255,255,0.08);
+  }
+
+  .action-btn.danger {
+    background: rgba(239,68,68,0.14);
+    color: #fca5a5;
+    border: 1px solid rgba(239,68,68,0.22);
+  }
+
+  .action-btn.danger:hover {
+    background: rgba(239,68,68,0.22);
+  }
+</style>
+
+{{> nav}}
+
+<div class="page-wrap">
+  <div class="page-inner">
+    <div class="page-message">
+      {{> message}}
+    </div>
+
+    <section class="hero-card">
+      <div class="hero-layout">
+        <div>
+          <div class="hero-status">
+            <span class="hero-status-dot"></span>
+            {{connectionStatusLabel}}
+          </div>
+
+          <div class="hero-identity">
+            <div class="profile-avatar">{{profileInitial}}</div>
+            <div>
+              <h1 class="hero-title">{{profileDisplayName}}</h1>
+              <p class="hero-headline">{{connectionHeadline}}</p>
+              <p class="hero-copy">{{connectionSummary}}</p>
+            </div>
+          </div>
+
+          <div class="hero-actions">
+            <a href="{{primaryActionHref}}" class="hero-btn primary">{{primaryActionLabel}}</a>
+            <a href="{{secondaryActionHref}}" class="hero-btn secondary">{{secondaryActionLabel}}</a>
+          </div>
+        </div>
+
+        <div class="hero-summary-card">
+          <div class="summary-label">Current Status</div>
+          <div class="summary-value">{{currentSessionTitle}}</div>
+          <p class="summary-copy">{{currentSessionCopy}}</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-shell">
+      <div class="section-head">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+            <path d="M20 21a8 8 0 0 0-16 0"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
+        <div>
+          <p class="section-kicker">Account</p>
+          <h2 class="section-title">Spotify account details</h2>
+          <p class="section-copy">
+            The essentials from your connected Spotify account, without the extra noise.
+          </p>
+        </div>
+      </div>
+
+      <div class="account-grid">
+        <article class="info-card">
+          <p class="info-label">Plan</p>
+          <h3 class="info-value">{{spotifyPlanLabel}}</h3>
+          <p class="info-copy">This is the Spotify plan currently attached to your account.</p>
+        </article>
+
+        <article class="info-card">
+          <p class="info-label">Country</p>
+          <h3 class="info-value">{{countryLabel}}</h3>
+          <p class="info-copy">Daily Dev Mix uses this for the account region Spotify reports.</p>
+        </article>
+      </div>
+
+      <p class="account-meta">Spotify ID: <strong>{{spotifyId}}</strong></p>
+    </section>
+
+    <section class="section-shell">
+      <div class="section-head">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+            <path d="M3 3v5h5"></path>
+            <path d="M3.05 13A9 9 0 1 0 6 5.3L3 8"></path>
+            <path d="M12 7v5l4 2"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="section-kicker">Activity And Usage</p>
+          <h2 class="section-title">What you have done here</h2>
+          <p class="section-copy">
+            A quick read on playlist creation, listening history, and whether a session is active right now.
+          </p>
+        </div>
+      </div>
+
+      <div class="activity-grid">
+        <article class="activity-card">
+          <p class="activity-label">Playlists generated</p>
+          <h3 class="activity-title">{{playlistSummaryTitle}}</h3>
+          <p class="activity-copy">{{playlistSummaryCopy}}</p>
+          {{#if generatedPlaylistCount}}
+            <p class="activity-meta">{{generatedPlaylistCount}} saved in this browser session</p>
+          {{/if}}
+        </article>
+
+        <article class="activity-card">
+          <p class="activity-label">Listening sessions completed</p>
+          <h3 class="activity-title">{{historySummaryTitle}}</h3>
+          <p class="activity-copy">{{historySummaryCopy}}</p>
+          {{#if sessionHistoryCount}}
+            <p class="activity-meta">{{sessionHistoryCount}} session summaries available</p>
+          {{/if}}
+        </article>
+
+        <article class="activity-card {{#if hasActiveSession}}active{{/if}}">
+          <p class="activity-label">Current session status</p>
+          <h3 class="activity-title">{{currentSessionTitle}}</h3>
+          <p class="activity-copy">{{currentSessionCopy}}</p>
+          {{#if hasActiveSession}}
+            <p class="activity-meta">Live tracking is ready to resume</p>
+          {{/if}}
+        </article>
+      </div>
+    </section>
+
+    <section class="section-shell">
+      <div class="section-head">
+        <div class="section-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="22" height="22">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+        </div>
+        <div>
+          <p class="section-kicker">Control And Privacy</p>
+          <h2 class="section-title">What the app can do, and what you can control</h2>
+          <p class="section-copy">
+            Permissions are translated into plain language here, with privacy actions clearly separated from your next step.
+          </p>
+        </div>
+      </div>
+
+      <div class="privacy-grid">
+        <div class="privacy-panel">
+          <h3 class="panel-title">What Daily Dev Mix can do</h3>
+          <p class="panel-copy">
+            These permissions let the app read what it needs for sessions and build playlists from the music you actually played.
+          </p>
+
+          <div class="permission-list">
+            {{#each permissionGroups}}
+              <article class="permission-item {{#if isGranted}}granted{{else}}needs-review{{/if}}">
+                <div class="permission-top">
+                  <div>
+                    <h4 class="permission-title">{{title}}</h4>
+                    <p class="permission-copy">{{description}}</p>
+                  </div>
+                  <span class="permission-state">
+                    {{#if isGranted}}Enabled{{else}}Needs reconnect{{/if}}
+                  </span>
+                </div>
+              </article>
+            {{/each}}
+          </div>
+
+          {{#if hasTechnicalScopeDetails}}
+            <details class="technical-details">
+              <summary>View technical details</summary>
+              <div class="technical-grid">
+                <div>
+                  <p class="technical-heading">Granted scopes</p>
+                  {{#if grantedScopeCount}}
+                    <div class="scope-list">
+                      {{#each grantedScopes}}
+                        <span class="scope-pill granted">{{this}}</span>
+                      {{/each}}
+                    </div>
+                  {{else}}
+                    <p class="scope-empty">No technical scope details are cached for this session yet.</p>
+                  {{/if}}
+                </div>
+
+                <div>
+                  <p class="technical-heading">Missing scopes</p>
+                  {{#if missingScopeCount}}
+                    <div class="scope-list">
+                      {{#each missingScopes}}
+                        <span class="scope-pill missing">{{this}}</span>
+                      {{/each}}
+                    </div>
+                  {{else}}
+                    <p class="scope-empty">All required scopes are currently available.</p>
+                  {{/if}}
+                </div>
+              </div>
+            </details>
+          {{/if}}
+        </div>
+
+        <div class="action-stack">
+          <div class="action-card featured">
+            <p class="action-label">Next step</p>
+            <h3 class="action-title">{{primaryActionLabel}}</h3>
+            <p class="action-copy">
+              {{#if hasActiveSession}}
+                Your Spotify session is already in motion. Jump back in when you are ready to keep tracking songs.
+              {{else}}
+                Start a listening session when you want Daily Dev Mix to capture playback and turn it into a playlist.
+              {{/if}}
+            </p>
+            <a href="{{primaryActionHref}}" class="action-btn primary">{{primaryActionLabel}}</a>
+            <a href="{{secondaryActionHref}}" class="action-btn secondary" style="margin-top:10px;">{{secondaryActionLabel}}</a>
+          </div>
+
+          <div class="action-card">
+            <p class="action-label">App access</p>
+            <h3 class="action-title">Sign out of this app</h3>
+            <p class="action-copy">
+              Ends your Daily Dev Mix session on this browser and sends you back to Spotify sign-in.
+            </p>
+            <form method="POST" action="/logout">
+              <button type="submit" class="action-btn secondary">Sign Out Of This App</button>
+            </form>
+          </div>
+
+          <div class="action-card danger-zone">
+            <p class="action-label">Privacy</p>
+            <h3 class="action-title">Remove Spotify connection</h3>
+            <p class="action-copy">
+              Removes access to your Spotify account and clears saved data on this browser.
+            </p>
+            <form method="POST" action="/disconnect" onsubmit="return window.confirm('This removes the Spotify connection and clears saved Daily Dev Mix data on this browser. Continue?');">
+              <button type="submit" class="action-btn danger">Remove Spotify Connection</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

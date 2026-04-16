@@ -28,6 +28,7 @@ async function invokeRoute(method, routePath, overrides = {}) {
     path: routePath,
     url: routePath,
     body: overrides.body || {},
+    params: overrides.params || {},
     query: overrides.query || {},
     session: {
       save(callback) {
@@ -133,6 +134,25 @@ describe('Server routes', () => {
     expect(res.headers.location).to.equal('/login');
   });
 
+  it('Redirects unauthenticated profile requests to /login', async () => {
+    const { res } = await invokeRoute('get', '/profile');
+
+    expect(res.statusCode).to.equal(302);
+    expect(res.headers.location).to.equal('/login');
+  });
+
+  it('Renders the profile page for authenticated users', async () => {
+    const { res } = await invokeRoute('get', '/profile', {
+      session: {
+        user: { authenticated: true },
+      },
+    });
+
+    expect(res.statusCode).to.equal(200);
+    expect(res.view).to.equal('pages/profile');
+    expect(res.locals.activePage).to.equal('profile');
+  });
+
   it('Rejects unauthenticated API session starts', async () => {
     const { res } = await invokeRoute('post', '/api/session/start', {
       body: { label: 'Studying', emoji: '📚' },
@@ -155,5 +175,55 @@ describe('Server routes', () => {
     expect(res.headers.location).to.include('playlist-modify-private');
     expect(req.session.spotifyAuthState).to.be.a('string');
     expect(req.session.spotifyAuthState.length).to.be.greaterThan(10);
+  });
+
+  it('Logs out authenticated users and redirects to the login page', async () => {
+    const { req, res } = await invokeRoute('post', '/logout', {
+      session: {
+        user: { authenticated: true },
+        destroy(callback) {
+          this.wasDestroyed = true;
+          callback();
+        },
+      },
+    });
+
+    expect(res.statusCode).to.equal(302);
+    expect(res.headers.location).to.equal('/login?loggedOut=1');
+    expect(req.session.wasDestroyed).to.equal(true);
+  });
+
+  it('Rejects unauthenticated playlist rename requests', async () => {
+    const { res } = await invokeRoute('patch', '/api/playlists/:playlistId', {
+      params: { playlistId: 'playlist-123' },
+      body: { name: 'Renamed Mix' },
+    });
+
+    expect(res.statusCode).to.equal(401);
+    expect(res.body.status).to.equal('error');
+  });
+
+  it('Validates playlist rename requests before calling Spotify', async () => {
+    const { res } = await invokeRoute('patch', '/api/playlists/:playlistId', {
+      params: { playlistId: 'playlist-123' },
+      body: { name: '   ' },
+      session: {
+        user: { authenticated: true },
+        spotifyToken: 'spotify-token',
+      },
+    });
+
+    expect(res.statusCode).to.equal(400);
+    expect(res.body.status).to.equal('error');
+    expect(res.body.message).to.equal('Enter a playlist name before saving.');
+  });
+
+  it('Rejects unauthenticated playlist delete requests', async () => {
+    const { res } = await invokeRoute('delete', '/api/playlists/:playlistId', {
+      params: { playlistId: 'playlist-123' },
+    });
+
+    expect(res.statusCode).to.equal(401);
+    expect(res.body.status).to.equal('error');
   });
 });
