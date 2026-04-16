@@ -20,3 +20,23 @@ Use this file to append weekly TA meeting notes.
 - Alternatives discussed:
 - Follow-up items:
 - Roles and responsibilities:
+
+
+## Week 3
+
+- Date: 04/02/26
+- Attendees: Everyone
+- Decisions made: Linking to spotify, make a landing page, create new session types.
+- Alternatives discussed:
+- Follow-up items:
+- Roles and responsibilities:
+
+
+## Week 4
+
+- Date: 04/02/26
+- Attendees: Everyone but greg
+- Decisions made: Just talked about our commits and finishing small ui tasks, and small bugs.
+- Alternatives discussed:
+- Follow-up items:
+- Roles and responsibilities:
