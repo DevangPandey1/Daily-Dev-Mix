@@ -475,6 +475,13 @@
   const topicEmoji = document.getElementById('topicEmoji');
   const topicError = document.getElementById('topicError');
   const startBtn = document.getElementById('startBtn');
+  const startBtnLabel = document.getElementById('startBtnLabel');
+  const sessionHint = document.getElementById('sessionHint');
+  const homeMessage = document.getElementById('homeMessage');
+
+  let selectedVibe = null;
+  let activeSession = null;
+  let isStarting = false;
 
   const getCustomTopics = () => {
     try {
@@ -491,19 +498,6 @@
   const activateStartButton = () => {
     startBtn.classList.replace('inactive', 'active');
   };
-
-  const selectVibe = (btn) => {
-    document.querySelectorAll('.vibe-btn').forEach((item) => item.classList.remove('selected'));
-    btn.classList.add('selected');
-<script>
-  let selectedVibe = null;
-  let activeSession = null;
-  let isStarting = false;
-
-  const startBtn = document.getElementById('startBtn');
-  const startBtnLabel = document.getElementById('startBtnLabel');
-  const sessionHint = document.getElementById('sessionHint');
-  const homeMessage = document.getElementById('homeMessage');
 
   function showMessage(message, type) {
     if (!message) {
@@ -562,13 +556,7 @@
     sessionStorage.setItem('selectedLabel', btn.dataset.label);
     sessionStorage.setItem('selectedEmoji', btn.dataset.emoji);
     activateStartButton();
-  };
-
-  const handleStart = () => {
-    if (sessionStorage.getItem('selectedLabel')) {
-      window.location.href = '/active-session';
-    }
-  };
+  }
 
   const renderCustomTopics = () => {
     vibeGrid.querySelectorAll('.vibe-btn.custom-topic').forEach((node) => node.remove());
@@ -612,13 +600,31 @@
     event.preventDefault();
     const name = topicName.value.trim();
     const emoji = topicEmoji.value.trim();
-    sessionStorage.setItem('selectedEmoji', btn.dataset.emoji);
 
-    // Activate start button
-    setStartButton(true, activeSession ? 'Start New Listening Session' : 'Start Listening Session');
-    sessionHint.textContent = 'We will watch your Spotify playback and turn the session into a playlist when you end it.';
-    showMessage('', '');
-  }
+    if (!name) {
+      topicError.textContent = 'Please enter a topic name.';
+      return;
+    }
+    if (name.length > 30) {
+      topicError.textContent = 'Topic name must be 30 characters or fewer.';
+      return;
+    }
+    if (!emoji) {
+      topicError.textContent = 'Please choose an emoji for the topic.';
+      return;
+    }
+
+    const topics = getCustomTopics();
+    topics.push({ label: name, emoji });
+    saveCustomTopics(topics);
+    renderCustomTopics();
+    closeTopicModal();
+
+    const newBtn = Array.from(vibeGrid.querySelectorAll('.vibe-btn.custom-topic')).find(
+      (btn) => btn.dataset.label === name && btn.dataset.emoji === emoji
+    );
+    if (newBtn) selectVibe(newBtn);
+  };
 
   async function handleStart() {
     if (isStarting) {
@@ -685,34 +691,6 @@
     }
   }
 
-  loadActiveSessionState();
-</script>
-
-    if (!name) {
-      topicError.textContent = 'Please enter a topic name.';
-      return;
-    }
-    if (name.length > 30) {
-      topicError.textContent = 'Topic name must be 30 characters or fewer.';
-      return;
-    }
-    if (!emoji) {
-      topicError.textContent = 'Please choose an emoji for the topic.';
-      return;
-    }
-
-    const topics = getCustomTopics();
-    topics.push({ label: name, emoji });
-    saveCustomTopics(topics);
-    renderCustomTopics();
-    closeTopicModal();
-
-    const newBtn = Array.from(vibeGrid.querySelectorAll('.vibe-btn.custom-topic')).find(
-      (btn) => btn.dataset.label === name && btn.dataset.emoji === emoji
-    );
-    if (newBtn) selectVibe(newBtn);
-  };
-
   const removeVibe = (label, event) => {
     event.stopPropagation();
     const btn = event.target.closest('.vibe-btn');
@@ -748,4 +726,6 @@
       }
     }
   });
+
+  loadActiveSessionState();
 </script>
