@@ -267,6 +267,7 @@ function buildTrackRecord(track, startedAt, completedAt) {
     name: track.name,
     artist: (track.artists || []).map(artist => artist.name).join(', '),
     artists: (track.artists || []).map(artist => artist.name),
+    artistIds: (track.artists || []).map(artist => artist.id).filter(Boolean),
     album: track.album?.name || 'Unknown Album',
     albumArt: track.album?.images?.[0]?.url || '',
     durationMs: track.duration_ms || 0,
@@ -671,7 +672,7 @@ async function createSpotifyPlaylist(req, sessionData) {
   const recommendedUris = [];
 
   const uniqueArtistIds = Array.from(
-    new Set(uniqueTracks.flatMap(t => t.artists || []).map(a => a.id || a).filter(Boolean))
+    new Set(uniqueTracks.flatMap(t => t.artistIds || []))
   );
 
   for (let i = 0; i < uniqueArtistIds.length; i += SEED_SIZE) {
