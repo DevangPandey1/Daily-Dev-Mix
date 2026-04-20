@@ -616,21 +616,30 @@ async function enrichSessionWithRecentTracks(req, sessionData) {
 }
 
 async function getRelatedArtistTracks(req, artistId, listenedUris, seenUris) {
+  console.log('Fetching related artists for:', artistId);
   const relatedResponse = await spotifyApiRequest(req, {
     method: 'get',
     url: `/artists/${artistId}/related-artists`,
   });
+  console.log('Related artists received:', relatedResponse.data.artists?.length ?? 0);
 
   const relatedArtists = (relatedResponse.data.artists || []).slice(0, 3);
   const tracks = [];
 
   for (const artist of relatedArtists) {
-    const topTracksResponse = await spotifyApiRequest(req, {
+    console.log('Searching tracks for artist:', artist.name);
+    const searchResponse = await spotifyApiRequest(req, {
       method: 'get',
-      url: `/artists/${artist.id}/top-tracks`,
+      url: '/search',
+      params: {
+        q: `artist:${artist.name}`,
+        type: 'track',
+        limit: 2,
+      },
     });
+    console.log('Search results for', artist.name, ':', searchResponse.data.tracks?.items?.length ?? 0);
 
-    for (const track of (topTracksResponse.data.tracks || []).slice(0, 2)) {
+    for (const track of (searchResponse.data.tracks?.items || [])) {
       if (track.uri && !listenedUris.has(track.uri) && !seenUris.has(track.uri)) {
         seenUris.add(track.uri);
         tracks.push(track.uri);
