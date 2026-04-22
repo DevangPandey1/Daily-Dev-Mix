@@ -864,7 +864,18 @@ app.get('/history', authPage, (req, res) => {
 app.get('/active-session', authPage, (req, res) => {
   res.render('pages/active-session');
 });
-
+app.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+    if (err) {
+      console.error('Logout error:', err);
+      return res.status(500).send('Could not log out.');
+    }
+    // Clear the login cookie
+    res.clearCookie('connect.sid'); 
+    // Redirect to landing page
+    res.render('pages/landing-page');
+  });
+});
 app.post('/api/session/start', authApi, async (req, res) => {
   const label = String(req.body.label || '').trim();
   const emoji = String(req.body.emoji || '🎵').trim() || '🎵';
