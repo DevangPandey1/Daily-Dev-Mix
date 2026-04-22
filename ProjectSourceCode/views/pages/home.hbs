@@ -15,7 +15,7 @@
   }
 
   body {
-    background: var(--black);
+    background: radial-gradient(ellipse 100% 45% at 50% 0%, #0d2b1a 0%, #000000 60%);
     color: var(--text);
     font-family: 'Figtree', sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -26,8 +26,8 @@
   .home-wrap {
     min-height: 100vh;
     padding: 40px 24px;
+    @media(min-width:768px){ .home-wrap { padding: 112px 40px 48px; } }
   }
-  @media(min-width:768px){ .home-wrap { padding: 48px 40px; } }
 
   .home-inner {
     max-width: 1280px;
@@ -672,9 +672,6 @@
   ];
 
   document.querySelector('.home-subtitle').textContent = messages[Math.floor(Math.random() * messages.length)];
-
-  loadActiveSessionState();
-</script>
 
   loadActiveSessionState();
 </script>
