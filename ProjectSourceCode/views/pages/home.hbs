@@ -344,7 +344,7 @@
 
     <!-- Header -->
     <div class="mb-12 fu">
-      <h1 class="home-title">Daily Dev Mix</h1>
+      <h1 class="home-title" id="randomHeader">Daily Dev Mix</h1>
       <p class="home-subtitle"></p>
     </div>
 
@@ -683,7 +683,23 @@
       saveCustomTopics(filtered);
     }
   };
+  const phrases = [
+    "Welcome back",
+    "Holy playlist aura",
+    "Your vibe is unmatched today",
+    "Music that understands you",
+    "Press play on your mood",
+    "This session is about to hit different",
+    "Today's vibe: curated perfection"
+  ];
 
+  function updateHeader() {
+    const header = document.getElementById("randomHeader");
+    if (!header) return;
+
+    const random = phrases[Math.floor(Math.random() * phrases.length)];
+    header.textContent = random;
+  }
   window.addEventListener('DOMContentLoaded', () => {
     renderCustomTopics();
     const storedLabel = sessionStorage.getItem('selectedLabel');
@@ -698,6 +714,8 @@
         activateStartButton();
       }
     }
+      updateHeader(); 
+
   });
   const name = "{{user.displayName}}";
 
