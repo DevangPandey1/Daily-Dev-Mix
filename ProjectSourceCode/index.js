@@ -35,6 +35,24 @@ if (!process.env.SESSION_SECRET) {
 }
 
 //Connect to DB -->
+const pgp = require('pg-promise')();
+const dbConfig = {
+  host: 'db', // the database server
+  port: 5432, // the database port
+  database: process.env.POSTGRES_DB, // the database name
+  user: process.env.POSTGRES_USER, // the user account to connect with
+  password: process.env.POSTGRES_PASSWORD, // the password of the user account
+};
+const db = pgp(dbConfig);
+// test database
+db.connect()
+  .then(obj => {
+    console.log('Database connection successful'); // you can view this message in the docker compose logs
+    obj.done(); // success, release the connection;
+  })
+  .catch(error => {
+    console.log('ERROR:', error.message || error);
+  });
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
 const hbs = handlebars.create({
   extname: 'hbs',
@@ -837,20 +855,14 @@ async function handleSpotifyCallback(req, res) {
     req.session.sessionHistory = req.session.sessionHistory || [];
 
     delete req.session.spotifyAuthState;
-
-    // ---------------------------------------------------
-    // Spotify profile fetch + DATABASE INSERT (NEW PART)
-    // ---------------------------------------------------
     try {
       const spotifyProfile = await getCurrentSpotifyProfile(req);
 
       const serializedProfile = serializeSpotifyProfile(spotifyProfile);
       req.session.spotifyProfile = serializedProfile;
-
-      // 🔥 SAVE / UPSERT USER IN POSTGRES
       try {
         const dbUser = await upsertSpotifyUser(spotifyProfile);
-        req.session.dbUserId = dbUser.id; // optional: store DB user id in session
+        req.session.dbUserId = dbUser.id; 
       } catch (dbError) {
         console.error('DB user upsert failed:', dbError);
       }
