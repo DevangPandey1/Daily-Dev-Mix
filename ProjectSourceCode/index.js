@@ -11,6 +11,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
+const { Pool } = require('pg');
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
 
 const PORT = Number(process.env.PORT || 3000);
@@ -71,7 +72,10 @@ app.use(bodyParser.json()); // specify the usage of JSON for parsing request bod
 app.use(
   session({
     store: new pgSession({
-      conString: process.env.DATABASE_URL,
+      pool: new Pool({
+        connectionString: process.env.DATABASE_URL,
+        ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
+      }),
       createTableIfMissing: true,
     }),
     secret: SESSION_SECRET,
