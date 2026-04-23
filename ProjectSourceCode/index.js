@@ -71,13 +71,15 @@ app.use(bodyParser.json()); // specify the usage of JSON for parsing request bod
 // initialize session variables
 app.use(
   session({
-    store: new pgSession({
-      pool: new Pool({
-        connectionString: process.env.DATABASE_URL,
-        ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false,
-      }),
-      createTableIfMissing: true,
-    }),
+    store: process.env.DATABASE_URL
+      ? new pgSession({
+          pool: new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false },
+          }),
+          createTableIfMissing: true,
+        })
+      : undefined,
     secret: SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
