@@ -96,11 +96,13 @@ async function upsertSpotifyUser(profile) {
   const query = `
     INSERT INTO users (spotify_id)
     VALUES ($1)
+    ON CONFLICT (spotify_id)
+    DO UPDATE SET spotify_id = EXCLUDED.spotify_id
     RETURNING *;
   `;
 
   const result = await db.query(query, [id]);
-  return result.rows[0];
+  return result[0];
 }
 function formatTrackDuration(ms) {
   const totalSeconds = Math.max(0, Math.floor((ms || 0) / 1000));
