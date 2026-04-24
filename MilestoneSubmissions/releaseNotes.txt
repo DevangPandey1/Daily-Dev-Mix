@@ -1,11 +1,23 @@
-## What's Changed
-* Spotify listening by @DevangPandey1 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/39
+Milestone 2
+# What's Changed
+* Added Login and Register Pages  by @IanMartin110 in https://github.com/DevangPandey1/Daily-Dev-Mix/pull/13
 
 ## New Contributors
-* @DevangPandey1 made their first contribution in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/39
+* @IanMartin110 made their first contribution in https://github.com/DevangPandey1/Daily-Dev-Mix/pull/13
 
-**Full Changelog**: https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/compare/Milestone_4...Milestone_4.1
+**Full Changelog**: https://github.com/DevangPandey1/Daily-Dev-Mix/commits/autoRelease
 
+
+Milestone 3
+## What's Changed
+* Added Login and Register Pages  by @IanMartin110 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/13
+
+
+**Full Changelog**: https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/commits/autoRelease
+
+
+
+Milestone 4
 ## What's Changed
 * Web dev shell by @GregLowman in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/22
 * added back test by @IanMartin110 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/23
@@ -15,3 +27,33 @@
 * @GregLowman made their first contribution in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/22
 
 **Full Changelog**: https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/compare/Milestone_3...Milestone_4
+
+## What's Changed
+* Spotify listening by @DevangPandey1 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/39
+
+## New Contributors
+* @DevangPandey1 made their first contribution in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/39
+
+**Full Changelog**: https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/compare/Milestone_4...Milestone_
+
+
+
+
+Finshed product
+## What's Changed
+* File Management by @Matthew-Aldridge in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/25
+* Landing page by @dylo3261 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/43
+* Added personalized user messages to dashboard by @dylo3261 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/44
+* Sessions by @Matthew-Aldridge in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/47
+* Suggested Playlists by @GregLowman in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/51
+* bring new main changes to logout branch by @IanMartin110 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/55
+* Update ReadMe.md with application details and instructions by @IanMartin110 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/56
+* Polish frontend by @dylo3261 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/58
+* Logout feature on Nav Bar by @IanMartin110 in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/57
+* Database and Railway integration by @GregLowman in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/59
+
+## New Contributors
+* @Matthew-Aldridge made their first contribution in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/25
+* @dylo3261 made their first contribution in https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/pull/43
+
+**Full Changelog**: https://github.com/Daily-Dev-Mix/Daily-Dev-Mix/compare/Milestone_4.1...FinishedProduct
