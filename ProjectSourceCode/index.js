@@ -9,7 +9,9 @@ const handlebars = require('express-handlebars'); //to enable express to work wi
 const Handlebars = require('handlebars'); // to include the templating engine responsible for compiling templates
 const path = require('path');
 const bodyParser = require('body-parser');
-const session = require('express-session'); // To set the session object. To store or access session data, use the `req.session`, which is (generally) serialized as JSON by the store.
+const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
+const { Pool } = require('pg');
 const axios = require('axios'); // To make HTTP requests from our server. We'll learn more about it in Part C.
 
 const PORT = Number(process.env.PORT || 3000);
@@ -35,6 +37,24 @@ if (!process.env.SESSION_SECRET) {
 }
 
 //Connect to DB -->
+const pgp = require('pg-promise')();
+const dbConfig = {
+  host: process.env.PGHOST || 'db',
+  port: 5432,
+  database: process.env.POSTGRES_DB,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+};
+const db = pgp(process.env.DATABASE_URL || dbConfig);
+// test database
+db.connect()
+  .then(obj => {
+    console.log('Database connection successful'); // you can view this message in the docker compose logs
+    obj.done(); // success, release the connection;
+  })
+  .catch(error => {
+    console.log('ERROR:', error.message || error);
+  });
 // create `ExpressHandlebars` instance and configure the layouts and partials dir.
 const hbs = handlebars.create({
   extname: 'hbs',
@@ -51,6 +71,15 @@ app.use(bodyParser.json()); // specify the usage of JSON for parsing request bod
 // initialize session variables
 app.use(
   session({
+    store: process.env.DATABASE_URL
+      ? new pgSession({
+          pool: new Pool({
+            connectionString: process.env.DATABASE_URL,
+            ssl: { rejectUnauthorized: false },
+          }),
+          createTableIfMissing: true,
+        })
+      : undefined,
     secret: SESSION_SECRET,
     saveUninitialized: false,
     resave: false,
@@ -72,7 +101,20 @@ function isSpotifyConfigured() {
       process.env.SPOTIFY_REDIRECT_URI
   );
 }
+async function upsertSpotifyUser(profile) {
+  const { id, display_name } = profile;
 
+  const query = `
+    INSERT INTO users (spotify_id)
+    VALUES ($1)
+    ON CONFLICT (spotify_id)
+    DO UPDATE SET spotify_id = EXCLUDED.spotify_id
+    RETURNING *;
+  `;
+
+  const result = await db.query(query, [id]);
+  return result[0];
+}
 function formatTrackDuration(ms) {
   const totalSeconds = Math.max(0, Math.floor((ms || 0) / 1000));
   const minutes = Math.floor(totalSeconds / 60);
@@ -812,29 +854,42 @@ async function handleSpotifyCallback(req, res) {
     req.session.spotifyToken = response.data.access_token;
     req.session.spotifyRefreshToken =
       response.data.refresh_token || req.session.spotifyRefreshToken || null;
+
     req.session.spotifyTokenExpiresAt =
       Date.now() + Math.max((response.data.expires_in || 3600) - 60, 60) * 1000;
+
     req.session.spotifyGrantedScopes = String(response.data.scope || SPOTIFY_SCOPE)
       .split(' ')
       .map(scope => scope.trim())
       .filter(Boolean);
+
     req.session.user = { authenticated: true };
     req.session.generatedPlaylists = req.session.generatedPlaylists || [];
     req.session.sessionHistory = req.session.sessionHistory || [];
-    delete req.session.spotifyAuthState;
 
+    delete req.session.spotifyAuthState;
     try {
       const spotifyProfile = await getCurrentSpotifyProfile(req);
-      req.session.spotifyProfile = serializeSpotifyProfile(spotifyProfile);
+
+      const serializedProfile = serializeSpotifyProfile(spotifyProfile);
+      req.session.spotifyProfile = serializedProfile;
+      try {
+        const dbUser = await upsertSpotifyUser(spotifyProfile);
+        req.session.dbUserId = dbUser.id; 
+      } catch (dbError) {
+        console.error('DB user upsert failed:', dbError);
+      }
+
     } catch (profileError) {
       console.log('Spotify profile load error:', formatSpotifyError(profileError));
     }
 
     await saveRequestSession(req);
-    res.redirect('/home');
+    return res.redirect('/home');
+
   } catch (requestError) {
     console.log('Spotify auth error:', formatSpotifyError(requestError));
-    res.redirect('/login');
+    return res.redirect('/login');
   }
 }
 
